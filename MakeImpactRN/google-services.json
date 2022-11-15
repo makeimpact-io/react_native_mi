@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "326617481866",
+    "project_id": "makeimpact-8adfb",
+    "storage_bucket": "makeimpact-8adfb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326617481866:android:63351240671327fcf36373",
+        "android_client_info": {
+          "package_name": "com.makeimpact"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "326617481866-i8l9jvuievqb9d8ds47gvhbsga71r2h9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXXy-XkZjK-PflXoeIX3iZJBD_vw6EBoY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "326617481866-i8l9jvuievqb9d8ds47gvhbsga71r2h9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
