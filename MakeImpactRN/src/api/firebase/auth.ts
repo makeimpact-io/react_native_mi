@@ -1,13 +1,18 @@
 import auth from '@react-native-firebase/auth';
+import store from '../../state/store';
+import { resetUser } from '../../state/user/userSlice';
 
 export const signupWithEmail = async (email: string, password: string) => {
   let response = '';
-  auth()
+  return await auth()
     .createUserWithEmailAndPassword(email, password)
     .then(() => {
       response = 'Success';
+      console.log(response);
+
+      return response;
     })
-    .catch(error => {
+    .catch((error: { code: string }) => {
       if (error.code === 'auth/email-already-in-use') {
         response = 'Already in use';
       }
@@ -17,10 +22,10 @@ export const signupWithEmail = async (email: string, password: string) => {
       }
 
       console.error(error);
-    });
-  console.log(response);
+      console.log(response);
 
-  return response;
+      return response;
+    });
 };
 
 export const signInWithEmail = async (email: string, password: string) => {
@@ -30,7 +35,7 @@ export const signInWithEmail = async (email: string, password: string) => {
     .then(() => {
       response = 'Success';
     })
-    .catch(error => {
+    .catch((error: { code: string }) => {
       if (error.code === 'auth/invalid-email') {
         response = 'Invalid Email';
       }
@@ -50,4 +55,5 @@ export const signOut = async () => {
   auth()
     .signOut()
     .then(() => console.log('User signed out!'));
+  store.dispatch(resetUser());
 };

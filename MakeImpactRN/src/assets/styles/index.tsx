@@ -7,5 +7,9 @@ export {
   MIGreen,
   MIPink,
   AppBackgroundColors,
+  OnboardingBackgroundColors,
   MatchGradient,
+  PrimaryGrey,
+  White,
+  CompanyListGrey,
 } from './RegularTheme';

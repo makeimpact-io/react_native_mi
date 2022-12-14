@@ -1,5 +1,11 @@
-import React from 'react';
-import { KeyboardTypeOptions, StyleSheet, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  KeyboardTypeOptions,
+  StyleSheet,
+  Text,
+  TextInput,
+} from 'react-native';
 import { MainTextWhite, TertiaryText } from '../../assets/styles';
 import { Black } from '../../assets/styles/RegularTheme';
 
@@ -10,22 +16,39 @@ export const InputField = (props: {
   keyboardType?: KeyboardTypeOptions;
   isPassword?: boolean;
   error?: boolean;
+  errorText?: string;
 }) => {
+  const [finishedEditing, setFinishedEditing] = useState(false);
+
   return (
-    <TextInput
-      placeholder={props.placeholder}
-      value={props.value}
-      onChangeText={text => props.onChangeText(text)}
-      keyboardType={props.keyboardType}
-      maxLength={30}
-      style={[style.field, props.error ? style.invalid : null]}
-      placeholderTextColor={TertiaryText}
-      secureTextEntry={props.isPassword}
-    />
+    <KeyboardAvoidingView
+      behavior="padding"
+      style={styles.container}
+      contentContainerStyle={styles.container}>
+      {props.error && finishedEditing ? (
+        <Text style={styles.errorMessage}>{props.errorText}</Text>
+      ) : (
+        <Text style={styles.errorMessage} />
+      )}
+      <TextInput
+        placeholder={props.placeholder}
+        value={props.value}
+        onChangeText={text => props.onChangeText(text)}
+        keyboardType={props.keyboardType}
+        maxLength={30}
+        style={[
+          styles.field,
+          props.error && finishedEditing ? styles.invalid : null,
+        ]}
+        placeholderTextColor={TertiaryText}
+        secureTextEntry={props.isPassword}
+        onEndEditing={() => setFinishedEditing(true)}
+      />
+    </KeyboardAvoidingView>
   );
 };
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   field: {
     width: '100%',
     height: 40,
@@ -36,10 +59,26 @@ const style = StyleSheet.create({
     color: Black,
     paddingLeft: 15,
     paddingRight: 15,
+    borderWidth: 1.2,
+    borderColor: 'white',
   },
-
+  containerContent: {
+    width: '100%',
+    height: '100%',
+  },
+  container: {
+    width: '100%',
+    height: 60,
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignContent: 'center',
+  },
+  errorMessage: {
+    color: Black,
+    marginLeft: 15,
+  },
   invalid: {
-    borderColor: 'red',
+    borderColor: '#ef4857',
     borderWidth: 1.2,
   },
 });
