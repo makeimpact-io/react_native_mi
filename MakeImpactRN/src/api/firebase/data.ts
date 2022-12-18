@@ -7,9 +7,23 @@ import {
   receiveCommitments,
   receiveSASBs,
   receiveSectors,
+  calculateCompaniesMatch,
+  receiveTradingData,
+  assignTradingDataToCompanies,
+  receiveAcademyCategories,
+  receiveAcademyArticles,
 } from '../../state/data/dataSlice';
 import store from '../../state/store';
-import { Commitment, Company, SASB, SDG, Sector } from '../../types';
+import {
+  AcademyArticle,
+  AcademyCategory,
+  Commitment,
+  Company,
+  SASB,
+  SDG,
+  Sector,
+  TradingData,
+} from '../../types';
 
 export const initiateRealtimeData = async () => {
   firestore().collection('sdgs').onSnapshot(onSDGResult, onError);
@@ -17,6 +31,15 @@ export const initiateRealtimeData = async () => {
   firestore().collection('commitments').onSnapshot(onCommitmentResult, onError);
   firestore().collection('sasbs').onSnapshot(onSASBResult, onError);
   firestore().collection('sectors').onSnapshot(onSectorResult, onError);
+  firestore()
+    .collection('academyArticles')
+    .onSnapshot(onAcademyArticleDataResult, onError);
+  firestore()
+    .collection('academyCategories')
+    .onSnapshot(onAcademyCategoryDataResult, onError);
+  firestore()
+    .collection('tradingData')
+    .onSnapshot(onTradingDataResult, onError);
 
   function onError(error: Error) {
     console.error(error);
@@ -48,7 +71,7 @@ function onCommitmentResult(
 function onCompanyResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
   let companies = [] as Company[];
   for (let i = 0; i < QuerySnapshot.docs.length; i++) {
-    const company = QuerySnapshot.docs[i].data();
+    let company = QuerySnapshot.docs[i].data();
     companies.push(company as unknown as Company);
   }
   companies.sort((a, b) =>
@@ -59,6 +82,10 @@ function onCompanyResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
       : 0,
   );
   store.dispatch(receiveCompanies(companies));
+  store.dispatch(assignTradingDataToCompanies());
+  if (store.getState().userReducer.goals) {
+    store.dispatch(calculateCompaniesMatch(store.getState().userReducer.goals));
+  }
 }
 
 function onSASBResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
@@ -79,4 +106,44 @@ function onSectorResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
   }
   sectors.sort(sector => parseInt(sector.id, 10));
   store.dispatch(receiveSectors(sectors));
+}
+
+function onTradingDataResult(
+  QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot,
+) {
+  let tradingDatas = [] as TradingData[];
+  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
+    const tradingData = QuerySnapshot.docs[i].data();
+    tradingDatas.push(tradingData as unknown as TradingData);
+  }
+  store.dispatch(receiveTradingData(tradingDatas));
+  store.dispatch(assignTradingDataToCompanies());
+}
+
+function onAcademyCategoryDataResult(
+  QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot,
+) {
+  let categories = [] as AcademyCategory[];
+  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
+    const sector = QuerySnapshot.docs[i].data();
+    categories.push(sector as unknown as Sector);
+  }
+  store.dispatch(receiveAcademyCategories(categories));
+}
+
+function onAcademyArticleDataResult(
+  QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot,
+) {
+  let articles = [] as AcademyArticle[];
+  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
+    const article = QuerySnapshot.docs[i].data();
+    articles.push(article as unknown as AcademyArticle);
+  }
+  store.dispatch(receiveAcademyArticles(articles));
+}
+
+export async function getStocksData(isin: string) {
+  return await (
+    await firestore().collection('stockPriceData').doc(isin).get()
+  ).data();
 }

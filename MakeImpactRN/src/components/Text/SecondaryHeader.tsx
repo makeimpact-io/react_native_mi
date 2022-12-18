@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextStyle } from 'react-native';
 import { PrimaryGrey } from '../../assets/styles';
 
-export const SecondaryHeader = (props: { text: String }) => {
-  return <Text style={style.text}>{props.text}</Text>;
+export const SecondaryHeader = (props: { text: String; style?: TextStyle }) => {
+  return <Text style={[style.text, props.style]}>{props.text}</Text>;
 };
 
 const style = StyleSheet.create({

@@ -12,14 +12,13 @@ import { SecondaryText } from '../../components/Text/SecondaryText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OnboardingBottomNavigation } from '../../components/NavigationBars/OnboardingBottomNavigation';
 import { connect } from 'react-redux';
-import { setInvested } from '../../state/tempUser/tempUserSlice';
-import { AppState } from '../../state/store';
 import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { Black } from '../../assets/styles/RegularTheme';
 import { SelectionButton } from '../../components';
 import Invested from '../../utils/enums/Invested';
 import { updateInvested } from '../../api/firebase/user';
 import { setRegistering } from '../../state/app/appSlice';
+import { useState } from 'react';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -28,6 +27,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const InvestedScreen = (props: Props) => {
+  const [invested, setInvested] = useState<Invested>();
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
@@ -44,8 +44,8 @@ const InvestedScreen = (props: Props) => {
             textColor={Black}
             backgroundColorSelected={MIGreen}
             textColorSelected={MainTextWhite}
-            onClick={() => props.setInvested(Invested.Experienced)}
-            selected={props.investedStage === Invested.Experienced}
+            onClick={() => setInvested(Invested.Experienced)}
+            selected={invested === Invested.Experienced}
           />
         </View>
         <View style={styles.selectionButton}>
@@ -55,8 +55,8 @@ const InvestedScreen = (props: Props) => {
             textColor={Black}
             backgroundColorSelected={MIGreen}
             textColorSelected={MainTextWhite}
-            onClick={() => props.setInvested(Invested.Little)}
-            selected={props.investedStage === Invested.Little}
+            onClick={() => setInvested(Invested.Little)}
+            selected={invested === Invested.Little}
           />
         </View>
         <View style={styles.selectionButton}>
@@ -66,19 +66,17 @@ const InvestedScreen = (props: Props) => {
             textColor={Black}
             backgroundColorSelected={MIGreen}
             textColorSelected={MainTextWhite}
-            onClick={() => props.setInvested(Invested.None)}
-            selected={props.investedStage === Invested.None}
+            onClick={() => setInvested(Invested.None)}
+            selected={invested === Invested.None}
           />
         </View>
       </SafeAreaView>
       <OnboardingBottomNavigation
         navigation={props.navigation}
         nextPage={props.route.params.nextScreen}
-        disabled={props.investedStage === null}
+        disabled={invested === null}
         onClick={() => {
-          updateInvested(
-            props.investedStage ? props.investedStage : Invested.None,
-          );
+          updateInvested(invested ? invested : Invested.None);
           setRegistering(false);
         }}
         goBack={true}
@@ -87,12 +85,9 @@ const InvestedScreen = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  investedStage: state.tempUserReducer.invested,
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = {
-  setInvested,
   setRegistering,
 };
 

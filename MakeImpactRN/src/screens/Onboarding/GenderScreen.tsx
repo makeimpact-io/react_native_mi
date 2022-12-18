@@ -10,13 +10,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OnboardingBottomNavigation } from '../../components/NavigationBars/OnboardingBottomNavigation';
 import { connect } from 'react-redux';
-import { setGender } from '../../state/tempUser/tempUserSlice';
-import { AppState } from '../../state/store';
 import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { Header, SecondaryText, SelectionButton } from '../../components';
 import { Black } from '../../assets/styles/RegularTheme';
 import Gender from '../../utils/enums/Gender';
 import { updateGender } from '../../api/firebase/user';
+import { useState } from 'react';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -25,6 +24,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const GenderScreen = (props: Props) => {
+  const [gender, setGender] = useState<Gender>();
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
@@ -41,8 +41,8 @@ const GenderScreen = (props: Props) => {
             textColor={Black}
             backgroundColorSelected={MIGreen}
             textColorSelected={MainTextWhite}
-            onClick={() => props.setGender(Gender.Male)}
-            selected={props.gender === Gender.Male}
+            onClick={() => setGender(Gender.Male)}
+            selected={gender === Gender.Male}
           />
         </View>
         <View style={styles.selectionButton}>
@@ -52,8 +52,8 @@ const GenderScreen = (props: Props) => {
             textColor={Black}
             backgroundColorSelected={MIGreen}
             textColorSelected={MainTextWhite}
-            onClick={() => props.setGender(Gender.Female)}
-            selected={props.gender === Gender.Female}
+            onClick={() => setGender(Gender.Female)}
+            selected={gender === Gender.Female}
           />
         </View>
         <View style={styles.selectionButton}>
@@ -63,8 +63,8 @@ const GenderScreen = (props: Props) => {
             textColor={Black}
             backgroundColorSelected={MIGreen}
             textColorSelected={MainTextWhite}
-            onClick={() => props.setGender(Gender.NonBinary)}
-            selected={props.gender === Gender.NonBinary}
+            onClick={() => setGender(Gender.NonBinary)}
+            selected={gender === Gender.NonBinary}
           />
         </View>
         <View style={styles.selectionButton}>
@@ -74,30 +74,24 @@ const GenderScreen = (props: Props) => {
             textColor={Black}
             backgroundColorSelected={MIGreen}
             textColorSelected={MainTextWhite}
-            onClick={() => props.setGender(Gender.PreferNotToSay)}
-            selected={props.gender === Gender.PreferNotToSay}
+            onClick={() => setGender(Gender.PreferNotToSay)}
+            selected={gender === Gender.PreferNotToSay}
           />
         </View>
       </SafeAreaView>
       <OnboardingBottomNavigation
         navigation={props.navigation}
         nextPage={props.route.params.nextScreen}
-        onClick={() =>
-          updateGender(props.gender ? props.gender : Gender.PreferNotToSay)
-        }
-        disabled={props.gender === null}
+        onClick={() => updateGender(gender ? gender : Gender.PreferNotToSay)}
+        disabled={gender === null}
       />
     </LinearGradient>
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  gender: state.tempUserReducer.gender,
-});
+const mapStateToProps = () => ({});
 
-const mapDispatchToProps = {
-  setGender,
-};
+const mapDispatchToProps = {};
 
 const GenderScreenConnected = connect(
   mapStateToProps,

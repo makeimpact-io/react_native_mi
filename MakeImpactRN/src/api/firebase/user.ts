@@ -1,30 +1,11 @@
 import firestore from '@react-native-firebase/firestore';
-import {
-  setInitialUserAdded,
-  setSubscribedForUserData,
-} from '../../state/app/appSlice';
+import { setSubscribedForUserData } from '../../state/app/appSlice';
 import store from '../../state/store';
-import { resetTempUser } from '../../state/tempUser/tempUserSlice';
 import { receiveUser } from '../../state/user/userSlice';
 import { User } from '../../types';
+import auth from '@react-native-firebase/auth';
 import Gender from '../../utils/enums/Gender';
 import Invested from '../../utils/enums/Invested';
-
-export const addInitialUser = async (uid: string) => {
-  firestore().collection('users').doc(uid).set({
-    uid: uid,
-    firstName: store.getState().tempUserReducer.firstName,
-    lastName: store.getState().tempUserReducer.lastName,
-    email: store.getState().tempUserReducer.email,
-    gender: null,
-    role: 'User',
-    invested: null,
-    goals: null,
-    companies: null,
-  });
-  store.dispatch(setInitialUserAdded(true));
-  store.dispatch(resetTempUser());
-};
 
 export const subscribeUserData = async (uid: string | undefined) => {
   if (uid) {
@@ -62,19 +43,19 @@ export const userExists = async (uid: string | undefined) => {
 };
 
 export const updateGender = async (gender: Gender) => {
-  firestore().collection('users').doc(store.getState().userReducer.uid).update({
+  firestore().collection('users').doc(auth().currentUser?.uid).update({
     gender: gender,
   });
 };
 
 export const updateInvested = async (invested: Invested) => {
-  firestore().collection('users').doc(store.getState().userReducer.uid).update({
+  firestore().collection('users').doc(auth().currentUser?.uid).update({
     invested: invested,
   });
 };
 
 export const updateGoals = async (goals: string[]) => {
-  firestore().collection('users').doc(store.getState().userReducer.uid).update({
+  firestore().collection('users').doc(auth().currentUser?.uid).update({
     goals: goals,
   });
 };

@@ -12,4 +12,7 @@ export {
   PrimaryGrey,
   White,
   CompanyListGrey,
+  SecondaryGrey,
+  LimeGreen,
+  Black,
 } from './RegularTheme';

@@ -8,23 +8,21 @@ import {
 } from 'react-native';
 import {
   AppBackgroundColors,
-  MIGreen,
   MIPink,
   SecondaryText,
 } from '../../assets/styles';
 
 import LinearGradient from 'react-native-linear-gradient';
 import { InputField } from '../../components/InputField/InputField';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { ActionButton } from '../../components/Button/ActionButton/ActionButton';
 import { Black } from '../../assets/styles/RegularTheme';
-import { signInWithEmail } from '../../api/firebase/auth';
 import {
   validateEmail,
   validatePassword,
 } from '../../utils/validation/InputValidator';
-import { Header } from '../../components/Text/Header';
+import { AuthContext } from '../../navigation/AuthProvider';
 
 export const LoginScreen = ({
   navigation,
@@ -38,6 +36,8 @@ export const LoginScreen = ({
 
   const [emailError, setEmailError] = useState('Invalid Email');
   const [passwordError, setPasswordError] = useState('Invalid Password');
+
+  const authContext = useContext(AuthContext);
 
   function verifyEmail(text: string) {
     setEmail(text);
@@ -59,7 +59,6 @@ export const LoginScreen = ({
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <View style={styles.screenHeader} />
       <SafeAreaView style={styles.container}>
-        <Header text={'Hey impactor!'} />
         <View style={styles.inputContainer}>
           <InputField
             placeholder={'Email'}
@@ -99,18 +98,8 @@ export const LoginScreen = ({
                 password !== '' &&
                 email !== ''
               ) {
-                signInWithEmail(email, password);
+                authContext?.login(email, password);
               }
-            }}
-          />
-        </View>
-        <View style={styles.button}>
-          <ActionButton
-            content={'CREATE MY ACCOUNT'}
-            backgroundColor={MIGreen}
-            textColor={MIPink}
-            action={() => {
-              navigation.navigate('Onboarding');
             }}
           />
         </View>

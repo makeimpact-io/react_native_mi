@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { TopNavigationBar } from '../components';
-import { UnderConstruction } from '../screens/Construction/UnderConstruction';
+import { TopNavigationBar } from '../../components';
+import { UnderConstruction } from '../../screens/Construction/UnderConstruction';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,7 +14,7 @@ function InvestNavigation() {
           return <TopNavigationBar navigation={navigation} />;
         },
       }}>
-      <Stack.Screen name="Invest" component={UnderConstruction} />
+      <Stack.Screen name="Home" component={UnderConstruction} />
     </Stack.Navigator>
   );
 }

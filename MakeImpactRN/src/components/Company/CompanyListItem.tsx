@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { White, CompanyListGrey } from '../../assets/styles';
 import { Black } from '../../assets/styles/RegularTheme';
 import { Company, Sector } from '../../types';
@@ -7,10 +7,11 @@ import { Company, Sector } from '../../types';
 export const CompanyListItem = (props: {
   company: Company;
   sector: Sector;
-  match: string;
+  match?: string;
+  onClick: () => void;
 }) => {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={props.onClick}>
       <View style={styles.logoContainer}>
         <Image
           style={styles.companyLogo}
@@ -22,12 +23,20 @@ export const CompanyListItem = (props: {
       <View style={styles.detailsContainer}>
         <Text style={styles.companyName}>{props.company.name}</Text>
         <Text style={styles.sectorName}>{props.sector.name}</Text>
-        <Text style={styles.stockPrice}>Nah</Text>
+        <Text style={styles.stockPrice}>
+          {props.company.tradingData &&
+          props.company.tradingData.priceLastClose !== '-'
+            ? props.company.tradingData.currency +
+              props.company.tradingData.priceLastClose
+            : 'NaN'}
+        </Text>
       </View>
-      <View style={styles.matchContainer}>
-        <Text style={styles.matchText}>{props.match + '% match'}</Text>
-      </View>
-    </View>
+      {props.match ? (
+        <View style={styles.matchContainer}>
+          <Text style={styles.matchText}>{props.match + '% match'}</Text>
+        </View>
+      ) : null}
+    </TouchableOpacity>
   );
 };
 

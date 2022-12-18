@@ -5,36 +5,48 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   SafeAreaView,
   TouchableNativeFeedback,
+  TouchableOpacity,
 } from 'react-native';
-import { signOut } from '../../api/firebase/auth';
-import { HeaderColor, MainTextWhite } from '../../assets/styles';
+import GoBackIcon from '../../assets/icons/Utils/GoBackIcon';
+import { HeaderColor, MainTextWhite, MIPink } from '../../assets/styles';
+import { Black } from '../../assets/styles/RegularTheme';
+import store from '../../state/store';
 
 export const TopNavigationBar = (props: {
   navigation: NativeStackHeaderProps | BottomTabHeaderProps;
+  hideGoBack?: boolean;
 }) => {
   return (
     <SafeAreaView style={styles.container}>
-      {props.navigation.navigation.canGoBack() ? (
-        <View style={styles.itemContainer}>
-          <TouchableWithoutFeedback
+      {props.navigation.navigation.canGoBack() && !props.hideGoBack ? (
+        <View style={[styles.itemContainer, styles.goBackIconContainer]}>
+          <TouchableOpacity
             onPress={() => props.navigation.navigation.goBack()}>
-            <Text style={styles.goBackIcon}>{'<='}</Text>
-          </TouchableWithoutFeedback>
+            <GoBackIcon />
+          </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.itemContainer} />
       )}
       <Text style={styles.miLogo}>m!</Text>
-      <TouchableNativeFeedback style={styles.itemContainer} onPress={signOut}>
-        <Text style={styles.profilePicture}>CT</Text>
-      </TouchableNativeFeedback>
+      {store.getState().userReducer.firstName &&
+      store.getState().userReducer.lastName ? (
+        <TouchableNativeFeedback
+          style={styles.itemContainer}
+          onPress={() => props.navigation.navigation.navigate('Menu')}>
+          <Text style={styles.profilePicture}>
+            {store.getState().userReducer.firstName.charAt(0) +
+              store.getState().userReducer.lastName.charAt(0)}
+          </Text>
+        </TouchableNativeFeedback>
+      ) : (
+        <View style={styles.itemContainer} />
+      )}
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -45,9 +57,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: HeaderColor,
   },
-  goBackIcon: {
-    paddingLeft: 10,
-    color: MainTextWhite,
+  goBackIconContainer: {
+    marginLeft: 20,
   },
   itemContainer: {
     width: 30,
@@ -56,7 +67,17 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   profilePicture: {
-    color: MainTextWhite,
+    width: 25,
+    height: 25,
+    borderRadius: 15,
+    backgroundColor: MIPink,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    marginRight: 20,
+    fontSize: 11,
+    fontWeight: 'bold',
+    fontFamily: 'Inter',
+    color: Black,
   },
   miLogo: {
     color: MainTextWhite,

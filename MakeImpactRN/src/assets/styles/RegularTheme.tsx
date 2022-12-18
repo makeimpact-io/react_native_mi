@@ -2,12 +2,15 @@ export const MainText = '#303037';
 export const MainTextWhite = '#f2f2f4';
 export const SecondaryText = '#E4E4E6';
 export const PrimaryGrey = '#c2c2c2';
+export const SecondaryGrey = '#aaaaac';
 export const TertiaryText = '#AAAAAC';
 
 export const CompanyListGrey = '#646467';
+export const CompanyDetailsGrey = '#d9d9d9';
 
 export const HeaderColor = '#0a0a14';
 
+export const LimeGreen = '#c0f5dc';
 export const MIGreen = '#276346';
 export const MIPink = '#F3D4D9';
 

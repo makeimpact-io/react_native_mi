@@ -9,7 +9,6 @@ import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib
 import { Company } from '../../types';
 import { CompanyListItem } from '../../components/Company/CompanyListItem';
 import { Black, MIPink } from '../../assets/styles/RegularTheme';
-import { useEffect, useState } from 'react';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -18,7 +17,6 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const HomeScreen = (props: Props) => {
-  const [companies, setCompanies] = useState<Company[]>([]);
   const renderMatches = ({ item }: { item: any }) => {
     const company = item as Company;
     const sector = props.sectors.filter(s => s.id === company.sectorId)[0];
@@ -27,39 +25,24 @@ const HomeScreen = (props: Props) => {
         <CompanyListItem
           company={company}
           sector={sector}
-          match={company.match ? company.match.toFixed(0) : 'Nah'}
+          match={company.match >= 0 ? company.match.toFixed(0) : 'Nah'}
+          onClick={() =>
+            props.navigation.navigate('CompanyDetails', { company: company })
+          }
         />
       </View>
     );
   };
-
-  useEffect(() => {
-    let companiesToEdit = props.companies.map(company => {
-      let newCompany = company;
-      let match = 0;
-      for (let i = 0; i < props.userGoals.length; i++) {
-        const userGoalId = props.userGoals[i];
-        if (newCompany.sdgs.includes(userGoalId)) {
-          match += (1 / props.userGoals.length) * 100;
-        }
-      }
-      newCompany.match = match;
-      console.log(newCompany.match);
-      return newCompany;
-    });
-    setCompanies(companiesToEdit);
-  }, [props.companies, props.userGoals]);
-
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>
-        <View style={styles.navbarContainer} />
         <FlatList
           style={styles.scrollStyle}
           nestedScrollEnabled={true}
-          data={companies}
+          data={props.companies}
           renderItem={renderMatches}
           keyExtractor={company => company.id}
+          showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <>
               <View style={styles.headerContainer}>
@@ -81,7 +64,6 @@ const HomeScreen = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
   companies: state.dataReducer.companies,
   sectors: state.dataReducer.sectors,
-  userGoals: state.userReducer.goals,
 });
 
 const mapDispatchToProps = {};
@@ -96,6 +78,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
+    paddingTop: 100,
   },
   container: {
     flex: 1,
@@ -127,9 +110,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: MIPink,
     textAlign: 'center',
-  },
-  navbarContainer: {
-    height: 50,
   },
   scrollStyle: {
     width: '100%',

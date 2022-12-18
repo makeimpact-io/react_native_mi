@@ -5,7 +5,6 @@ import { OnboardingBackgroundColors } from '../../assets/styles';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
-import { toggleGoal } from '../../state/tempUser/tempUserSlice';
 import { AppState } from '../../state/store';
 import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import {
@@ -15,6 +14,8 @@ import {
   SDGActionButton,
 } from '../../components';
 import { updateGoals } from '../../api/firebase/user';
+import { setRegistering } from '../../state/app/appSlice';
+import { useState } from 'react';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -23,19 +24,29 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const GoalsScreen = (props: Props) => {
-  let sdgs = props.sdgs.map(sdg => {
-    return (
-      <View style={styles.sdg}>
-        <SDGActionButton
-          key={sdg.id}
-          onClick={() => props.toggleGoal(sdg.id)}
-          active={props.userGoals.includes(sdg.id)}
-          activeImage={sdg.greenImageLink}
-          inactiveImage={sdg.blackImageLink}
-        />
-      </View>
-    );
-  });
+  const [userGoals, setUserGoals] = useState<string[]>([]);
+  const toggleGoal = (id: string) => {
+    if (userGoals.includes(id)) {
+      setUserGoals(userGoals.filter(g => g !== id));
+    } else {
+      setUserGoals(userGoals.concat(id));
+    }
+  };
+  let sdgs = props.sdgs
+    .sort(a => parseInt(a.id))
+    .map(sdg => {
+      return (
+        <View style={styles.sdg}>
+          <SDGActionButton
+            key={sdg.id}
+            onClick={() => toggleGoal(sdg.id)}
+            active={userGoals.includes(sdg.id)}
+            activeImage={sdg.greenImageLink}
+            inactiveImage={sdg.blackImageLink}
+          />
+        </View>
+      );
+    });
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
@@ -56,8 +67,11 @@ const GoalsScreen = (props: Props) => {
       <OnboardingBottomNavigation
         navigation={props.navigation}
         nextPage={props.route.params.nextScreen}
-        disabled={props.userGoals.length < 3}
-        onClick={() => updateGoals(props.userGoals)}
+        disabled={userGoals.length < 3}
+        onClick={() => {
+          updateGoals(userGoals);
+          setRegistering(false);
+        }}
         goBack={true}
       />
     </LinearGradient>
@@ -65,12 +79,11 @@ const GoalsScreen = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-  userGoals: state.tempUserReducer.goals,
   sdgs: state.dataReducer.sdgs,
 });
 
 const mapDispatchToProps = {
-  toggleGoal,
+  setRegistering,
 };
 
 const GoalsScreenConnected = connect(

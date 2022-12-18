@@ -1,9 +1,10 @@
+import { TradingData } from './TradingData';
+
 export interface Company {
   id: string;
   name: string;
   employees: number;
   csrLink: string;
-  website: string;
   logo: string;
   sdgs: string[];
   commitments: string[];
@@ -14,4 +15,8 @@ export interface Company {
   conId: string;
   masterDataCompanyName: string;
   match: number;
+  website: string;
+  rank: number | undefined;
+  stocksData: Map<string, string> | undefined;
+  tradingData: TradingData | undefined;
 }

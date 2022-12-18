@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { initiateRealtimeData } from './src/api/firebase/data';
-import { Navigator } from './src/navigation/Navigator';
+import Providers from './src/navigation';
 import store from './src/state/store';
 
 const App = () => {
@@ -10,7 +10,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Navigator />
+        <Providers />
       </NavigationContainer>
     </Provider>
   );

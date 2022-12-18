@@ -8,20 +8,16 @@ import {
   InvestedScreen,
   GoalsScreen,
 } from '../screens';
+import store from '../state/store';
 
 const Stack = createNativeStackNavigator();
 
-function OnboardingNavigation({ route }: { route: any }) {
+function OnboardingNavigation() {
   let onboardingList = [
     {
       name: 'Register',
       screen: RegisterScreen,
     },
-    //To be created
-    // {
-    //   name: 'PhoneNumber',
-    //   screen: PhoneScreen,
-    // },
     {
       name: 'Gender',
       screen: GenderScreen,
@@ -35,7 +31,7 @@ function OnboardingNavigation({ route }: { route: any }) {
       screen: GoalsScreen,
     },
   ];
-  if (route && route.params && route.params.removeRegister) {
+  if (store.getState().appReducer.registering) {
     onboardingList = onboardingList.filter(
       screen => screen.name !== 'Register',
     );
@@ -63,12 +59,10 @@ function OnboardingNavigation({ route }: { route: any }) {
               <OnboardingNavigationBar
                 navigation={navigation}
                 index={
-                  route && route.params && route.params.removeRegister
-                    ? index + 1
-                    : index
+                  store.getState().appReducer.registering ? index + 1 : index
                 }
                 length={
-                  route && route.params && route.params.removeRegister
+                  store.getState().appReducer.registering
                     ? onboardingList.length + 1
                     : onboardingList.length
                 }

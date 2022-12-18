@@ -1,4 +1,5 @@
 import auth from '@react-native-firebase/auth';
+import { setLoggedIn } from '../../state/app/appSlice';
 import store from '../../state/store';
 import { resetUser } from '../../state/user/userSlice';
 
@@ -8,7 +9,6 @@ export const signupWithEmail = async (email: string, password: string) => {
     .createUserWithEmailAndPassword(email, password)
     .then(() => {
       response = 'Success';
-      console.log(response);
 
       return response;
     })
@@ -22,7 +22,6 @@ export const signupWithEmail = async (email: string, password: string) => {
       }
 
       console.error(error);
-      console.log(response);
 
       return response;
     });
@@ -54,6 +53,6 @@ export const signInWithEmail = async (email: string, password: string) => {
 export const signOut = async () => {
   auth()
     .signOut()
-    .then(() => console.log('User signed out!'));
+    .then(() => store.dispatch(setLoggedIn(false)));
   store.dispatch(resetUser());
 };

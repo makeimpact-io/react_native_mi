@@ -9,28 +9,19 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import { Header } from '../../components/Text/Header';
 import { SecondaryText } from '../../components/Text/SecondaryText';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { InputField } from '../../components/InputField/InputField';
 import {
   validateEmail,
-  validateName,
   validatePassword,
 } from '../../utils/validation/InputValidator';
 import { CheckBox } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OnboardingBottomNavigation } from '../../components/NavigationBars/OnboardingBottomNavigation';
 import { connect } from 'react-redux';
-import {
-  setConfirmedPassword,
-  setEmail,
-  setFirstName,
-  setLastName,
-  setPassword,
-} from '../../state/tempUser/tempUserSlice';
-import { AppState } from '../../state/store';
 import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { signupWithEmail } from '../../api/firebase/auth';
 import { setRegistering } from '../../state/app/appSlice';
+import { AuthContext } from '../../navigation/AuthProvider';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -39,90 +30,29 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const RegisterScreen = (props: Props) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   const [agreement, setAgreement] = useState(false);
 
-  const [firstNameIsValid, setFirstNameIsValid] = useState(true);
-  const [lastNameIsValid, setLastNameIsValid] = useState(true);
-  const [emailIsValid, setEmailIsValid] = useState(true);
-  const [passwordIsValid, setPasswordIsValid] = useState(true);
-  const [repeatPasswordIsValid, setRepeatPasswordIsValid] = useState(true);
   const [formIsValid, setFormIsValid] = useState(false);
 
-  function verifyFirstName(text: string) {
-    props.setFirstName(text);
-    if (validateName(text) || text === '') {
-      setFirstNameIsValid(true);
-    } else {
-      setFirstNameIsValid(false);
-    }
-  }
-
-  function verifyLastName(text: string) {
-    props.setLastName(text);
-    if (validateName(text) || text === '') {
-      setLastNameIsValid(true);
-    } else {
-      setLastNameIsValid(false);
-    }
-  }
-
-  function verifyEmail(text: string) {
-    props.setEmail(text);
-    if (validateEmail(text) || text === '') {
-      setEmailIsValid(true);
-    } else {
-      setEmailIsValid(false);
-    }
-  }
-
-  function verifyPassword(text: string) {
-    props.setPassword(text);
-    if (validatePassword(text) || text === '') {
-      setPasswordIsValid(true);
-    } else {
-      setPasswordIsValid(false);
-    }
-  }
-
-  function verifyRepeatPassword(text: string) {
-    props.setConfirmedPassword(text);
-    if (
-      validatePassword(text) ||
-      (text === '' && props.password === props.confirmedPassword)
-    ) {
-      setRepeatPasswordIsValid(true);
-    } else {
-      setRepeatPasswordIsValid(false);
-    }
-  }
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     if (
-      firstNameIsValid &&
-      lastNameIsValid &&
-      emailIsValid &&
-      passwordIsValid &&
-      repeatPasswordIsValid &&
-      props.firstName !== '' &&
-      props.lastName !== '' &&
-      props.email !== '' &&
-      props.password !== '' &&
-      props.confirmedPassword !== '' &&
+      (validateEmail(email) || email !== '') &&
+      (validatePassword(password) || password !== '') &&
+      (validatePassword(repeatPassword) ||
+        (repeatPassword !== '' && password === repeatPassword)) &&
       agreement
     ) {
       setFormIsValid(true);
     } else {
       setFormIsValid(false);
     }
-  }, [
-    props,
-    agreement,
-    firstNameIsValid,
-    lastNameIsValid,
-    emailIsValid,
-    passwordIsValid,
-    repeatPasswordIsValid,
-  ]);
+  }, [agreement, email, password, repeatPassword]);
+
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
@@ -135,39 +65,30 @@ const RegisterScreen = (props: Props) => {
           <SecondaryText text={"Let's create your account."} />
           <View style={styles.inputsContainer}>
             <InputField
-              placeholder={'First name'}
-              value={props.firstName}
-              onChangeText={(text: string) => verifyFirstName(text)}
-              error={!firstNameIsValid}
-              errorText={'Invalid name'}
-            />
-            <InputField
-              placeholder={'Last name'}
-              value={props.lastName}
-              onChangeText={(text: string) => verifyLastName(text)}
-              error={!lastNameIsValid}
-              errorText={'Invalid name'}
-            />
-            <InputField
               placeholder={'E-mail'}
-              value={props.email}
-              onChangeText={(text: string) => verifyEmail(text)}
-              error={!emailIsValid}
+              value={email}
+              onChangeText={(text: string) => setEmail(text)}
+              error={!(validateEmail(email) || email === '')}
               errorText={'Invalid email'}
             />
             <InputField
               placeholder={'Password'}
-              value={props.password}
-              onChangeText={(text: string) => verifyPassword(text)}
-              error={!passwordIsValid}
+              value={password}
+              onChangeText={(text: string) => setPassword(text)}
+              error={!(validatePassword(password) || password === '')}
               isPassword={true}
               errorText={'Invalid password'}
             />
             <InputField
               placeholder={'Confirm Password'}
-              value={props.confirmedPassword}
-              onChangeText={(text: string) => verifyRepeatPassword(text)}
-              error={!repeatPasswordIsValid}
+              value={repeatPassword}
+              onChangeText={(text: string) => setRepeatPassword(text)}
+              error={
+                !(
+                  validatePassword(repeatPassword) ||
+                  (repeatPassword === '' && password === repeatPassword)
+                )
+              }
               isPassword={true}
               errorText={'Invalid password'}
             />
@@ -194,7 +115,7 @@ const RegisterScreen = (props: Props) => {
           disabled={!formIsValid}
           onClick={async () => {
             props.setRegistering(true);
-            await signupWithEmail(props.email, props.confirmedPassword);
+            authContext?.register(email, repeatPassword);
           }}
           goBack={true}
         />
@@ -203,22 +124,9 @@ const RegisterScreen = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  firstName: state.tempUserReducer.firstName,
-  lastName: state.tempUserReducer.lastName,
-  email: state.tempUserReducer.email,
-  password: state.tempUserReducer.password,
-  confirmedPassword: state.tempUserReducer.confirmedPassword,
-});
+const mapStateToProps = () => ({});
 
-const mapDispatchToProps = {
-  setFirstName,
-  setLastName,
-  setEmail,
-  setPassword,
-  setConfirmedPassword,
-  setRegistering,
-};
+const mapDispatchToProps = { setRegistering };
 
 const RegisterScreenConnected = connect(
   mapStateToProps,
