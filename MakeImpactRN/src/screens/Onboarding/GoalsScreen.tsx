@@ -24,7 +24,9 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const GoalsScreen = (props: Props) => {
-  const [userGoals, setUserGoals] = useState<string[]>([]);
+  const [userGoals, setUserGoals] = useState<string[]>(
+    props.userGoals === null ? [] : props.userGoals,
+  );
   const toggleGoal = (id: string) => {
     if (userGoals.includes(id)) {
       setUserGoals(userGoals.filter(g => g !== id));
@@ -32,21 +34,25 @@ const GoalsScreen = (props: Props) => {
       setUserGoals(userGoals.concat(id));
     }
   };
+
   let sdgs = props.sdgs
-    .sort(a => parseInt(a.id))
     .map(sdg => {
-      return (
-        <View style={styles.sdg}>
-          <SDGActionButton
-            key={sdg.id}
-            onClick={() => toggleGoal(sdg.id)}
-            active={userGoals.includes(sdg.id)}
-            activeImage={sdg.greenImageLink}
-            inactiveImage={sdg.blackImageLink}
-          />
-        </View>
-      );
-    });
+      return {
+        id: parseInt(sdg.id, 10),
+        component: (
+          <View style={styles.sdg} key={sdg.id}>
+            <SDGActionButton
+              key={sdg.id}
+              onClick={() => toggleGoal(sdg.id)}
+              active={userGoals.includes(sdg.id)}
+              activeImage={sdg.greenImageLink}
+              inactiveImage={sdg.blackImageLink}
+            />
+          </View>
+        ),
+      };
+    })
+    .sort((a, b) => a.id - b.id);
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
@@ -54,13 +60,16 @@ const GoalsScreen = (props: Props) => {
       <SafeAreaView style={styles.container}>
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContainer}>
+          contentContainerStyle={styles.scrollViewContainer}
+          showsVerticalScrollIndicator={false}>
           <View style={styles.contentContainer}>
             <Header text={'Which values matter most to you?'} />
             <SecondaryText
               text={'Select at least 3 values which matter most to you.'}
             />
-            <View style={styles.sdgsContainer}>{sdgs}</View>
+            <View style={styles.sdgsContainer}>
+              {sdgs.map(a => a.component)}
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -70,7 +79,6 @@ const GoalsScreen = (props: Props) => {
         disabled={userGoals.length < 3}
         onClick={() => {
           updateGoals(userGoals);
-          setRegistering(false);
         }}
         goBack={true}
       />
@@ -80,6 +88,7 @@ const GoalsScreen = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
   sdgs: state.dataReducer.sdgs,
+  userGoals: state.userReducer.goals,
 });
 
 const mapDispatchToProps = {

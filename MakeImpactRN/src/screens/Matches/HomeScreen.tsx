@@ -9,6 +9,7 @@ import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib
 import { Company } from '../../types';
 import { CompanyListItem } from '../../components/Company/CompanyListItem';
 import { Black, MIPink } from '../../assets/styles/RegularTheme';
+import { useEffect, useState } from 'react';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -17,6 +18,15 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const HomeScreen = (props: Props) => {
+  const [matchingCompanies, setMatchingCompanies] = useState<Company[]>([]);
+
+  useEffect(() => {
+    setMatchingCompanies(
+      props.companies
+        .filter(c => c.match !== 0)
+        .sort((a, b) => b.match - a.match),
+    );
+  }, [props.companies]);
   const renderMatches = ({ item }: { item: any }) => {
     const company = item as Company;
     const sector = props.sectors.filter(s => s.id === company.sectorId)[0];
@@ -39,7 +49,7 @@ const HomeScreen = (props: Props) => {
         <FlatList
           style={styles.scrollStyle}
           nestedScrollEnabled={true}
-          data={props.companies}
+          data={matchingCompanies}
           renderItem={renderMatches}
           keyExtractor={company => company.id}
           showsVerticalScrollIndicator={false}

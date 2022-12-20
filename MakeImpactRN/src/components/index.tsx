@@ -16,6 +16,7 @@ export { AcademyHeadline } from './Text/AcademyHeadline';
 
 export { SDGActionButton } from './SDGActionButton/SDGActionButton';
 export { StocksChart } from './Charts/StocksChart';
+export { MatchChart } from './Charts/MatchChart';
 
 export { DataTable } from './DataTable/DataTable';
 export { ArticleView } from './ArticleView/ArticleView';

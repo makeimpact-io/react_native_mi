@@ -6,23 +6,21 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
 } from 'react-native';
-import {
-  AppBackgroundColors,
-  MIPink,
-  SecondaryText,
-} from '../../assets/styles';
+import { AppBackgroundColors, MIPink } from '../../assets/styles';
 
 import LinearGradient from 'react-native-linear-gradient';
 import { InputField } from '../../components/InputField/InputField';
 import { useContext, useState } from 'react';
 import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { ActionButton } from '../../components/Button/ActionButton/ActionButton';
-import { Black } from '../../assets/styles/RegularTheme';
+import { Black, White } from '../../assets/styles/RegularTheme';
 import {
   validateEmail,
   validatePassword,
 } from '../../utils/validation/InputValidator';
 import { AuthContext } from '../../navigation/AuthProvider';
+import { Header, SecondaryText } from '../../components';
+import { ErrorModal } from '../../components/Modals/ErrorModal';
 
 export const LoginScreen = ({
   navigation,
@@ -31,49 +29,57 @@ export const LoginScreen = ({
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [emailIsValid, setEmailIsValid] = useState(true);
-  const [passwordIsValid, setPasswordIsValid] = useState(true);
-
-  const [emailError, setEmailError] = useState('Invalid Email');
-  const [passwordError, setPasswordError] = useState('Invalid Password');
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('Invalid attempt');
 
   const authContext = useContext(AuthContext);
 
-  function verifyEmail(text: string) {
-    setEmail(text);
-    if (validateEmail(text) || text === '') {
-      setEmailIsValid(true);
+  const login = async function () {
+    if (
+      validatePassword(password) &&
+      validateEmail(email) &&
+      password !== '' &&
+      email !== ''
+    ) {
+      const result = await authContext?.login(email, password);
+      if (result) {
+        setErrorMsg('The email address or password is incorrect!');
+        setError(true);
+      }
     } else {
-      setEmailIsValid(false);
+      setErrorMsg('Invalid data, please check your email and password again!');
+      setError(true);
     }
-  }
-  function verifyPassword(text: string) {
-    setPassword(text);
-    if (validatePassword(text) || text === '') {
-      setPasswordIsValid(true);
-    } else {
-      setPasswordIsValid(false);
-    }
-  }
+  };
+
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
-      <View style={styles.screenHeader} />
+      <ErrorModal
+        errorMsg={errorMsg}
+        hideModalText={'TRY AGAIN'}
+        toggleModal={() => setError(!error)}
+        showModal={error}
+      />
+      <View style={styles.screenHeader}>
+        <Header text={'Welcome impactor!'} />
+        <SecondaryText text={'Please enter your email and password.'} />
+      </View>
       <SafeAreaView style={styles.container}>
         <View style={styles.inputContainer}>
           <InputField
             placeholder={'Email'}
             value={email}
-            onChangeText={text => verifyEmail(text)}
-            error={!emailIsValid}
-            errorText={emailError}
+            onChangeText={text => setEmail(text)}
+            error={!(validateEmail(email) || email === '')}
+            errorText={'Invalid Email'}
           />
           <InputField
             placeholder={'Password'}
             value={password}
-            onChangeText={text => verifyPassword(text)}
+            onChangeText={text => setPassword(text)}
             isPassword={true}
-            error={!passwordIsValid}
-            errorText={passwordError}
+            error={!(validatePassword(password) || password === '')}
+            errorText={'Invalid Password'}
           />
         </View>
         <View style={styles.forgottenPasswordContainer}>
@@ -91,16 +97,7 @@ export const LoginScreen = ({
             content={'LOG IN'}
             backgroundColor={MIPink}
             textColor={Black}
-            action={() => {
-              if (
-                passwordIsValid &&
-                emailIsValid &&
-                password !== '' &&
-                email !== ''
-              ) {
-                authContext?.login(email, password);
-              }
-            }}
+            action={login}
           />
         </View>
       </SafeAreaView>
@@ -116,6 +113,7 @@ const styles = StyleSheet.create({
   },
   screenHeader: {
     height: 200,
+    paddingTop: 100,
   },
   container: {
     flex: 1,
@@ -125,7 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputContainer: {
-    height: 100,
+    height: 200,
     width: '100%',
     display: 'flex',
     justifyContent: 'space-evenly',
@@ -137,7 +135,7 @@ const styles = StyleSheet.create({
   },
   forgottenPassword: {
     fontSize: 12,
-    color: SecondaryText,
+    color: White,
   },
   errorContainer: {
     width: '100%',

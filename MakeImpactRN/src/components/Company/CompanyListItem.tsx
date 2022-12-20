@@ -3,6 +3,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { White, CompanyListGrey } from '../../assets/styles';
 import { Black } from '../../assets/styles/RegularTheme';
 import { Company, Sector } from '../../types';
+import { MatchChart } from '../Charts/MatchChart';
 
 export const CompanyListItem = (props: {
   company: Company;
@@ -21,18 +22,25 @@ export const CompanyListItem = (props: {
         />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.companyName}>{props.company.name}</Text>
+        <Text style={styles.companyName}>
+          {props.company.name.slice(
+            0,
+            props.company.name.length > 18 ? 18 : props.company.name.length,
+          ) + (props.company.name.length > 18 ? '...' : '')}
+        </Text>
         <Text style={styles.sectorName}>{props.sector.name}</Text>
         <Text style={styles.stockPrice}>
           {props.company.tradingData &&
           props.company.tradingData.priceLastClose !== '-'
             ? props.company.tradingData.currency +
+              ' ' +
               props.company.tradingData.priceLastClose
-            : 'NaN'}
+            : 'N / A'}
         </Text>
       </View>
       {props.match ? (
         <View style={styles.matchContainer}>
+          <MatchChart match={parseInt(props.match, 10)} />
           <Text style={styles.matchText}>{props.match + '% match'}</Text>
         </View>
       ) : null}
@@ -54,7 +62,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 40,
     height: 40,
-    paddingBottom: 25,
+    paddingBottom: 10,
     marginHorizontal: 5,
     display: 'flex',
     justifyContent: 'center',
@@ -67,7 +75,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     height: '100%',
-    width: 200,
+    width: 230,
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',

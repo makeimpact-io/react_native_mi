@@ -5,25 +5,26 @@ import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 import { LoadingScreen } from '../screens/Utils/LoadingScreen';
 import AppContent from './App/AppContent';
-import AuthContent from './AuthContent';
+import { AuthContent } from './AuthContent';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import store from '../state/store';
-import { setRegistering } from '../state/app/appSlice';
+import { AppState } from '../state/store';
 import { subscribeUserData } from '../api/firebase/user';
+import { resetUser } from '../state/user/userSlice';
+import { connect } from 'react-redux';
 
-export function Routes() {
+type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
+function Routes(props: Props) {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
   const [initializing, setInitializing] = useState(true);
-
+  const [authenticating, setAuthenticating] = useState(true);
+  const resetUserState = props.resetUser;
   async function onAuthStateChanged(
     firebaseUser: React.SetStateAction<
       FirebaseAuthTypes.User | null | undefined
     >,
   ) {
     setUser(firebaseUser);
-    if (initializing) {
-      setInitializing(false);
-    }
   }
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
@@ -31,23 +32,30 @@ export function Routes() {
   });
 
   useEffect(() => {
+    setInitializing(true);
     if (user?.uid !== undefined) {
       subscribeUserData(user?.uid);
+    } else {
+      resetUserState();
     }
-  }, [user?.uid]);
+    setInitializing(false);
+  }, [resetUserState, user?.uid]);
 
   useEffect(() => {
-    const stateUser = store.getState().userReducer;
     if (
-      !stateUser.invested == null ||
-      stateUser.goals.length < 3 ||
-      !stateUser.gender == null
+      user &&
+      props.user.firstName !== '' &&
+      props.user.lastName !== '' &&
+      props.user.goals !== null &&
+      props.user.goals.length >= 3 &&
+      props.user.invested !== null &&
+      props.user.gender !== null
     ) {
-      store.dispatch(setRegistering(true));
+      setAuthenticating(false);
     } else {
-      store.dispatch(setRegistering(false));
+      setAuthenticating(true);
     }
-  }, []);
+  }, [user, props.user]);
 
   if (initializing) {
     return <LoadingScreen />;
@@ -57,11 +65,19 @@ export function Routes() {
       style={{
         flex: 1,
       }}>
-      {user && !store.getState().appReducer.registering ? (
-        <AppContent />
-      ) : (
-        <AuthContent />
-      )}
+      {!authenticating ? <AppContent /> : <AuthContent />}
     </SafeAreaView>
   );
 }
+
+const mapStateToProps = (state: AppState) => ({
+  user: state.userReducer,
+});
+
+const mapDispatchToProps = {
+  resetUser,
+};
+
+const RoutesConnected = connect(mapStateToProps, mapDispatchToProps)(Routes);
+
+export { RoutesConnected as Routes };

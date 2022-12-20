@@ -29,6 +29,7 @@ const userSlice = createSlice({
       state.gender = action.payload.gender;
       state.invested = action.payload.invested;
       state.goals = action.payload.goals;
+      console.log(action.payload);
     },
     toggleGoal(state, action: PayloadAction<string>) {
       if (state.goals?.includes(action.payload) && state.goals.length > 3) {

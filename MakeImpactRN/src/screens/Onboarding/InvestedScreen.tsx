@@ -19,6 +19,7 @@ import Invested from '../../utils/enums/Invested';
 import { updateInvested } from '../../api/firebase/user';
 import { setRegistering } from '../../state/app/appSlice';
 import { useState } from 'react';
+import { AppState } from '../../state/store';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -27,7 +28,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const InvestedScreen = (props: Props) => {
-  const [invested, setInvested] = useState<Invested>();
+  const [invested, setInvested] = useState<Invested | null>(props.invested);
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
@@ -76,8 +77,7 @@ const InvestedScreen = (props: Props) => {
         nextPage={props.route.params.nextScreen}
         disabled={invested === null}
         onClick={() => {
-          updateInvested(invested ? invested : Invested.None);
-          setRegistering(false);
+          updateInvested(invested != null ? invested : Invested.None);
         }}
         goBack={true}
       />
@@ -85,7 +85,9 @@ const InvestedScreen = (props: Props) => {
   );
 };
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state: AppState) => ({
+  invested: state.userReducer.invested,
+});
 
 const mapDispatchToProps = {
   setRegistering,

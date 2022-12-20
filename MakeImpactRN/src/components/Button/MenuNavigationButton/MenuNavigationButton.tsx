@@ -7,7 +7,10 @@ export const MenuNavigationButton = (props: {
 }) => {
   const renderedLinks = props.links.map(link => {
     return (
-      <TouchableOpacity onPress={link.onClick} style={styles.link}>
+      <TouchableOpacity
+        key={link.text}
+        onPress={link.onClick}
+        style={styles.link}>
         <View style={styles.linkIconContainer}>{link.icon}</View>
         <Text style={styles.linkText}>{link.text}</Text>
       </TouchableOpacity>

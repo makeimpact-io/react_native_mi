@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { StyleSheet, SafeAreaView, ScrollView, View } from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  View,
+  Pressable,
+} from 'react-native';
 import { AppBackgroundColors } from '../../assets/styles';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
@@ -8,6 +14,9 @@ import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib
 import { AcademyHeadline, CompanyListItem } from '../../components';
 import { Company, Sector } from '../../types';
 import { useEffect, useState } from 'react';
+import PinkWaveHeader from '../../assets/icons/PinkWaves/PinkWaveHeader';
+import QuestionMark from '../../assets/icons/Utils/QuestionMark';
+import { DescriptionModal } from '../../components/Modals/DescriptionModal';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -18,6 +27,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 const SectorCompaniesScreen = (props: Props) => {
   const sector = props.route.params.sector as Sector;
   const [sectorCompanies, setSectorCompanies] = useState<Company[]>([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     setSectorCompanies(
@@ -44,7 +54,22 @@ const SectorCompaniesScreen = (props: Props) => {
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
           <View style={styles.headerContainer}>
-            <AcademyHeadline text={sector.name} style={styles.header} />
+            <PinkWaveHeader style={styles.pinkWave} />
+            <View style={styles.headerContent}>
+              <View />
+              <Pressable
+                onPress={() => setShowModal(!showModal)}
+                style={styles.questionMarkContainer}>
+                <QuestionMark />
+              </Pressable>
+            </View>
+            <AcademyHeadline text={sector.name} style={styles.title} />
+            <DescriptionModal
+              header={sector.name}
+              content={sector.description}
+              toggleModal={() => setShowModal(!showModal)}
+              showModal={showModal}
+            />
           </View>
           <View style={styles.companiesContainer}>{companiesToRender}</View>
         </ScrollView>
@@ -72,9 +97,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 30,
   },
+  pinkWave: {
+    position: 'absolute',
+  },
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -86,15 +114,31 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingTop: 10,
   },
-  header: {
-    fontSize: 28,
+  headerContent: {
+    width: '100%',
+    height: 80,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  companiesContainer: {},
+  title: {
+    fontSize: 28,
+    marginTop: 10,
+    marginLeft: 20,
+  },
+  companiesContainer: {
+    alignItems: 'center',
+  },
   scroll: {
     width: '100%',
   },
   companyContainer: {
     marginVertical: 6,
+    width: '90%',
+  },
+  questionMarkContainer: {
+    marginRight: 20,
   },
 });
 

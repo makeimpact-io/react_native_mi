@@ -74,8 +74,9 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   errorMessage: {
-    color: Black,
+    color: '#ef4857',
     marginLeft: 15,
+    paddingBottom: 5,
   },
   invalid: {
     borderColor: '#ef4857',

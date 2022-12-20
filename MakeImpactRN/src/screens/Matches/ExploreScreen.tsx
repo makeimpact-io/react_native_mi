@@ -129,7 +129,7 @@ const ExploreScreen = (props: Props) => {
   const sectorsToRender = props.sectors.map(sector => {
     let index = parseInt(sector.id, 10) % 3;
     return (
-      <View style={styles.sectorLinkContainer}>
+      <View style={styles.sectorLinkContainer} key={sector.id}>
         <ActionButton
           style={styles.sectorLink}
           content={sector.name}

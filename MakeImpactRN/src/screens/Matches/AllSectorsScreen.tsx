@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
 import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { AcademyHeadline } from '../../components';
+import PinkWaveHeader from '../../assets/icons/PinkWaves/PinkWaveHeader';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -36,7 +37,10 @@ const AllSectorsScreen = (props: Props) => {
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContainer}>
+          <PinkWaveHeader style={styles.pinkWave} />
           <View style={styles.headerContainer}>
             <AcademyHeadline text={'Sectors'} style={styles.header} />
           </View>
@@ -67,9 +71,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
     display: 'flex',
     justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  scrollContainer: {
+    justifyContent: 'center',
     alignItems: 'center',
   },
   headerContainer: {
@@ -78,8 +86,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
   },
+  pinkWave: {
+    marginTop: -30,
+  },
   header: {
     fontSize: 28,
+    paddingLeft: 30,
+    paddingTop: 10,
   },
   sectorIcon: {
     width: 100,
@@ -92,6 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingVertical: 10,
+    width: '87.5%',
   },
 });
 

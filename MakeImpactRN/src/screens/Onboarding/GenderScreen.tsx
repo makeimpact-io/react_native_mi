@@ -16,6 +16,7 @@ import { Black } from '../../assets/styles/RegularTheme';
 import Gender from '../../utils/enums/Gender';
 import { updateGender } from '../../api/firebase/user';
 import { useState } from 'react';
+import { AppState } from '../../state/store';
 
 type Props = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps & {
@@ -24,7 +25,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 const GenderScreen = (props: Props) => {
-  const [gender, setGender] = useState<Gender>();
+  const [gender, setGender] = useState<Gender | null>(props.gender);
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
@@ -80,16 +81,21 @@ const GenderScreen = (props: Props) => {
         </View>
       </SafeAreaView>
       <OnboardingBottomNavigation
+        goBack={true}
         navigation={props.navigation}
         nextPage={props.route.params.nextScreen}
-        onClick={() => updateGender(gender ? gender : Gender.PreferNotToSay)}
+        onClick={() =>
+          updateGender(gender !== null ? gender : Gender.PreferNotToSay)
+        }
         disabled={gender === null}
       />
     </LinearGradient>
   );
 };
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (state: AppState) => ({
+  gender: state.userReducer.gender,
+});
 
 const mapDispatchToProps = {};
 

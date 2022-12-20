@@ -6,6 +6,7 @@ import { User } from '../../types';
 import auth from '@react-native-firebase/auth';
 import Gender from '../../utils/enums/Gender';
 import Invested from '../../utils/enums/Invested';
+import { calculateCompaniesMatch } from '../../state/data/dataSlice';
 
 export const subscribeUserData = async (uid: string | undefined) => {
   if (uid) {
@@ -27,6 +28,11 @@ export const subscribeUserData = async (uid: string | undefined) => {
             user.invested = data.invested ? data.invested : null;
             user.goals = data.goals ? data.goals : null;
             store.dispatch(receiveUser(user));
+            if (store.getState().dataReducer.companies) {
+              store.dispatch(
+                calculateCompaniesMatch(store.getState().userReducer.goals),
+              );
+            }
           }
         },
         (error: Error) => {
@@ -57,5 +63,12 @@ export const updateInvested = async (invested: Invested) => {
 export const updateGoals = async (goals: string[]) => {
   firestore().collection('users').doc(auth().currentUser?.uid).update({
     goals: goals,
+  });
+};
+
+export const updateNames = async (firstName: string, lastName: string) => {
+  firestore().collection('users').doc(auth().currentUser?.uid).update({
+    firstName: firstName,
+    lastName: lastName,
   });
 };

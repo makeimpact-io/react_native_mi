@@ -10,9 +10,10 @@ import firestore from '@react-native-firebase/firestore';
 interface AuthContextInterface {
   user: FirebaseAuthTypes.User | null;
   setUser: Dispatch<SetStateAction<null>>;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
+  register: (email: string, password: string) => Promise<any>;
   logout: () => Promise<void>;
+  passwordReset: (email: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextInterface | null>(null);
@@ -28,13 +29,13 @@ export const AuthProvider = ({ children }: any) => {
         login: async (email: string, password: string) => {
           try {
             await auth().signInWithEmailAndPassword(email, password);
-          } catch (e) {
-            console.log(e);
+          } catch (e: any) {
+            return e;
           }
         },
         register: async (email: string, password: string) => {
           try {
-            await auth()
+            return await auth()
               .createUserWithEmailAndPassword(email, password)
               .then(() => {
                 //Once the user creation has happened successfully, we can add the currentUser into firestore
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }: any) => {
                     firstName: '',
                     lastName: '',
                     email: email,
-                    gender: null,
+                    gender: [],
                     role: 'User',
                     invested: null,
                     goals: null,
@@ -60,14 +61,17 @@ export const AuthProvider = ({ children }: any) => {
                       'Something went wrong with added user to firestore: ',
                       error,
                     );
+                    return error;
                   });
               })
               //we need to catch the whole sign up process if it fails too.
               .catch(error => {
                 console.log('Something went wrong with sign up: ', error);
+                return error;
               });
           } catch (e) {
             console.log(e);
+            return e;
           }
         },
         logout: async () => {
@@ -75,6 +79,13 @@ export const AuthProvider = ({ children }: any) => {
             await auth().signOut();
           } catch (e) {
             console.log(e);
+          }
+        },
+        passwordReset: async (email: string) => {
+          try {
+            await auth().sendPasswordResetEmail(email);
+          } catch (e) {
+            return e;
           }
         },
       }}>
