@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
-import { PrimaryGrey } from '../../assets/styles';
+import { PrimaryGrey } from '../../assets/styles/RegularTheme';
 
 export const SecondaryHeader = (props: { text: String; style?: TextStyle }) => {
   return <Text style={[style.text, props.style]}>{props.text}</Text>;

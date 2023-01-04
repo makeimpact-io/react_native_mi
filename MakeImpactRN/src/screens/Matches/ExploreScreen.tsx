@@ -7,14 +7,12 @@ import {
   TouchableWithoutFeedback,
   Text,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import {
   AcademyHeadline,
-  ActionButton,
+  DefaultButton,
   CompanyExtendedListItem,
   ImpactChampion,
   SecondaryHeader,
@@ -22,6 +20,7 @@ import {
 import { Company } from '../../types';
 import { useEffect, useState } from 'react';
 import {
+  AppBackgroundColors,
   Black,
   CompanyDetailsGrey,
   LimeGreen,
@@ -30,12 +29,11 @@ import {
   MIPink,
   White,
 } from '../../assets/styles/RegularTheme';
+import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
+import { MatchesNavigationParamList } from '../../navigation/App/SubNavigations/MatchesNavigation';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  MaterialTopTabScreenProps<MatchesNavigationParamList, 'Explore'>;
 
 const ExploreScreen = (props: Props) => {
   const [impactChampions, setImpactChampions] = useState<Company[]>([]);
@@ -90,7 +88,9 @@ const ExploreScreen = (props: Props) => {
             props.sectors.filter(sector => sector.id === company.sectorId)[0]
           }
           onClick={() =>
-            props.navigation.navigate('CompanyDetails', { company: company })
+            props.navigation
+              .getParent()
+              ?.navigate('CompanyDetails', { company: company })
           }
         />
       </View>
@@ -105,7 +105,9 @@ const ExploreScreen = (props: Props) => {
             props.sectors.filter(sector => sector.id === company.sectorId)[0]
           }
           onClick={() =>
-            props.navigation.navigate('CompanyDetails', { company: company })
+            props.navigation
+              .getParent()
+              ?.navigate('CompanyDetails', { company: company })
           }
         />
       </View>
@@ -120,7 +122,9 @@ const ExploreScreen = (props: Props) => {
             props.sectors.filter(sector => sector.id === company.sectorId)[0]
           }
           onClick={() =>
-            props.navigation.navigate('CompanyDetails', { company: company })
+            props.navigation
+              .getParent()
+              ?.navigate('CompanyDetails', { company: company })
           }
         />
       </View>
@@ -130,13 +134,15 @@ const ExploreScreen = (props: Props) => {
     let index = parseInt(sector.id, 10) % 3;
     return (
       <View style={styles.sectorLinkContainer} key={sector.id}>
-        <ActionButton
+        <DefaultButton
           style={styles.sectorLink}
           content={sector.name}
           backgroundColor={buttonStyles[index].background}
           textColor={buttonStyles[index].text}
           action={() =>
-            props.navigation.navigate('SectorCompanies', { sector: sector })
+            props.navigation
+              .getParent()
+              ?.navigate('SectorCompanies', { sector: sector })
           }
         />
       </View>
@@ -145,7 +151,9 @@ const ExploreScreen = (props: Props) => {
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.scrollView}>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}>
           <AcademyHeadline text={'!MPACT CHAMPIONS'} style={styles.headline} />
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {impactChampionsRendered}
@@ -161,7 +169,13 @@ const ExploreScreen = (props: Props) => {
                 style={styles.sectorHeadline}
               />
               <TouchableWithoutFeedback
-                onPress={() => props.navigation.navigate('')}>
+                onPress={() =>
+                  props.navigation
+                    .getParent()
+                    ?.navigate('CommitmentCompanies', {
+                      commitment: props.commitments.find(a => a.id === '1'),
+                    })
+                }>
                 <Text style={styles.viewAllButton}>View All</Text>
               </TouchableWithoutFeedback>
             </View>
@@ -176,7 +190,13 @@ const ExploreScreen = (props: Props) => {
                 style={styles.sectorHeadline}
               />
               <TouchableWithoutFeedback
-                onPress={() => props.navigation.navigate('')}>
+                onPress={() =>
+                  props.navigation
+                    .getParent()
+                    ?.navigate('CommitmentCompanies', {
+                      commitment: props.commitments.find(a => a.id === '2'),
+                    })
+                }>
                 <Text style={styles.viewAllButton}>View All</Text>
               </TouchableWithoutFeedback>
             </View>
@@ -187,12 +207,14 @@ const ExploreScreen = (props: Props) => {
             </ScrollView>
           </View>
           <View style={styles.viewAllButtonContainer}>
-            <ActionButton
+            <DefaultButton
               content={'VIEW ALL COMMITMENTS'}
               backgroundColor={MIPink}
               textColor={Black}
               allCaps={true}
-              action={() => props.navigation.navigate('Commitments')}
+              action={() =>
+                props.navigation.getParent()?.navigate('Commitments')
+              }
             />
           </View>
           <View style={styles.sectorHeadlineContainer}>
@@ -201,7 +223,7 @@ const ExploreScreen = (props: Props) => {
               style={styles.sectorHeadline}
             />
             <TouchableWithoutFeedback
-              onPress={() => props.navigation.navigate('Sectors')}>
+              onPress={() => props.navigation.getParent()?.navigate('Sectors')}>
               <Text style={styles.viewAllButton}>View All</Text>
             </TouchableWithoutFeedback>
           </View>
@@ -241,12 +263,12 @@ const ExploreScreen = (props: Props) => {
             </ScrollView>
           </View>
           <View style={styles.viewAllButtonContainer}>
-            <ActionButton
+            <DefaultButton
               content={'VIEW ALL SECTORS'}
               backgroundColor={MIPink}
               textColor={Black}
               allCaps={true}
-              action={() => props.navigation.navigate('Sectors')}
+              action={() => props.navigation.getParent()?.navigate('Sectors')}
             />
           </View>
         </ScrollView>
@@ -273,11 +295,11 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    paddingTop: 105,
+    paddingTop: 80,
   },
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -285,6 +307,7 @@ const styles = StyleSheet.create({
   headline: {
     fontSize: 28,
     marginBottom: 14,
+    paddingLeft: 15,
   },
   horizontalScrollItem: {
     paddingHorizontal: 10,
@@ -294,6 +317,7 @@ const styles = StyleSheet.create({
   },
   sectorHeadline: {
     fontSize: 22,
+    paddingLeft: 15,
   },
   sectorHeadlineContainer: {
     display: 'flex',
@@ -307,9 +331,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Barlow',
     color: CompanyDetailsGrey,
+    paddingRight: 15,
   },
   commitmentsHeader: {
     textAlign: 'left',
+    paddingLeft: 15,
   },
   commitmentsCompaniesContainer: {
     paddingTop: 30,

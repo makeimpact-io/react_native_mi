@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, SafeAreaView, Text } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
+import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 
 export const UnderConstruction = () => {

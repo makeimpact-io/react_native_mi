@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
-import { Black, MIGreen, MIPink } from '../../assets/styles';
-import { ActionButton } from '../Button/ActionButton/ActionButton';
+import { Black, MIGreen, MIPink } from '../../assets/styles/RegularTheme';
+import { DefaultButton } from '../';
 
 export const ErrorModal = (props: {
   errorMsg: string;
@@ -19,10 +19,10 @@ export const ErrorModal = (props: {
       }}>
       <View style={styles.centerContainer}>
         <View style={styles.modalView}>
-          <View style={styles.contantContainer}>
+          <View style={styles.contentContainer}>
             <Text style={styles.modalHeader}>{props.errorMsg}</Text>
             <View style={styles.hideModalButtonContainer}>
-              <ActionButton
+              <DefaultButton
                 content={props.hideModalText}
                 backgroundColor={MIPink}
                 textColor={Black}
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
   },
-  contantContainer: {
+  contentContainer: {
     width: '80%',
   },
   hideModalButtonContainer: {

@@ -13,22 +13,20 @@ import {
   MainTextWhite,
   MIPink,
   SecondaryGrey,
-} from '../../assets/styles';
+} from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { AcademyArticle } from '../../types';
 
 import { SectorHeader, VideoPlayer } from '../../components';
 import RenderHtml from 'react-native-render-html';
 import { Black } from '../../assets/styles/RegularTheme';
+import { RootStackNavigationParamList } from '../../navigation/App/AppContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<RootStackNavigationParamList, 'Article'>;
 
 const ArticleScreen = (props: Props) => {
   const article = props.route.params.article as AcademyArticle;
@@ -38,12 +36,15 @@ const ArticleScreen = (props: Props) => {
     html: article.content,
   };
   return (
-    <LinearGradient colors={AppBackgroundColors} style={styles.background}>
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <VideoPlayer
+        cover={article.thumbnailLink}
+        uri="https://firebasestorage.googleapis.com/v0/b/makeimpact-8adfb.appspot.com/o/academyVideos%2FSFDRs%2F1.%20Sorting%20out%20GHG%20emissions_%20scope%201%2C%202%20and%203%20(SFDR%2C%20PAI%20%231).mp4?alt=media&token=71f43347-67d1-463f-a14b-79545b77b09e"
+      />
+      <LinearGradient colors={AppBackgroundColors} style={styles.background}>
         <ScrollView
           style={styles.scrollContainer}
           showsVerticalScrollIndicator={false}>
-          <VideoPlayer uri="https://firebasestorage.googleapis.com/v0/b/makeimpact-8adfb.appspot.com/o/academyVideos%2FSFDRs%2F1.%20Sorting%20out%20GHG%20emissions_%20scope%201%2C%202%20and%203%20(SFDR%2C%20PAI%20%231).mp4?alt=media&token=71f43347-67d1-463f-a14b-79545b77b09e" />
           <View style={styles.headLineContainer}>
             <SectorHeader text={article.title} />
           </View>
@@ -66,8 +67,8 @@ const ArticleScreen = (props: Props) => {
             <Text style={styles.endlineText}>make!mpact</Text>
           </View>
         </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 
@@ -87,17 +88,18 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
+    width: '100%',
   },
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 0,
   },
   scrollContainer: {
-    width: '100%',
+    width: '90%',
   },
   headLineContainer: {
     alignItems: 'flex-start',

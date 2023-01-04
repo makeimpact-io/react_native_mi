@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { MainTextWhite } from '../../assets/styles';
+import { MainTextWhite } from '../../assets/styles/RegularTheme';
 
 export const Header = (props: { text: String }) => {
   return <Text style={style.text}>{props.text}</Text>;

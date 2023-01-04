@@ -1,4 +1,3 @@
-import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import React from 'react';
 import {
@@ -10,12 +9,16 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import GoBackIcon from '../../assets/icons/Utils/GoBackIcon';
-import { HeaderColor, MainTextWhite, MIPink } from '../../assets/styles';
-import { Black } from '../../assets/styles/RegularTheme';
+import {
+  HeaderColor,
+  MainTextWhite,
+  MIPink,
+  Black,
+} from '../../assets/styles/RegularTheme';
 import store from '../../state/store';
 
 export const TopNavigationBar = (props: {
-  navigation: NativeStackHeaderProps | BottomTabHeaderProps;
+  navigation: NativeStackHeaderProps;
   hideGoBack?: boolean;
 }) => {
   return (

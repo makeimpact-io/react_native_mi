@@ -6,26 +6,24 @@ import {
   View,
   Pressable,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
+import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { AcademyHeadline, CompanyListItem } from '../../components';
-import { Commitment, Company } from '../../types';
+import { Company } from '../../types';
 import { useEffect, useState } from 'react';
 import { DescriptionModal } from '../../components/Modals/DescriptionModal';
 import QuestionMark from '../../assets/icons/Utils/QuestionMark';
 import PinkWaveHeader from '../../assets/icons/PinkWaves/PinkWaveHeader';
+import { RootStackNavigationParamList } from '../../navigation/App/AppContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<RootStackNavigationParamList, 'CommitmentCompanies'>;
 
 const CommitmentCompaniesScreen = (props: Props) => {
-  const commitment = props.route.params.commitment as Commitment;
+  const commitment = props.route.params.commitment;
   const [commitmentCompanies, setCommitmentCompanies] = useState<Company[]>([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -46,7 +44,9 @@ const CommitmentCompaniesScreen = (props: Props) => {
             props.sectors.filter(sector => sector.id === company.sectorId)[0]
           }
           onClick={() =>
-            props.navigation.navigate('CompanyDetails', { company: company })
+            props.navigation
+              .getParent()
+              ?.navigate('CompanyDetails', { company: company })
           }
         />
       </View>
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    paddingTop: 30,
   },
   pinkWave: {
     position: 'absolute',

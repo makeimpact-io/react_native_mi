@@ -10,6 +10,9 @@ export const CompanyDetailsGrey = '#d9d9d9';
 
 export const HeaderColor = '#0a0a14';
 
+export const GrowColor = '#23c09b';
+export const DeficitColor = '#d7091c';
+
 export const LimeGreen = '#c0f5dc';
 export const MIGreen = '#276346';
 export const MIPink = '#F3D4D9';

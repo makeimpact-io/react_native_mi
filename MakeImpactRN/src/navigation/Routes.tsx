@@ -17,7 +17,7 @@ type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 function Routes(props: Props) {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
   const [initializing, setInitializing] = useState(true);
-  const [authenticating, setAuthenticating] = useState(true);
+  const [authenticating, setAuthenticating] = useState<boolean | undefined>();
   const resetUserState = props.resetUser;
   async function onAuthStateChanged(
     firebaseUser: React.SetStateAction<
@@ -26,48 +26,56 @@ function Routes(props: Props) {
   ) {
     setUser(firebaseUser);
   }
+
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   });
 
   useEffect(() => {
-    setInitializing(true);
     if (user?.uid !== undefined) {
       subscribeUserData(user?.uid);
     } else {
       resetUserState();
     }
-    setInitializing(false);
   }, [resetUserState, user?.uid]);
 
   useEffect(() => {
-    if (
-      user &&
-      props.user.firstName !== '' &&
-      props.user.lastName !== '' &&
-      props.user.goals !== null &&
-      props.user.goals.length >= 3 &&
-      props.user.invested !== null &&
-      props.user.gender !== null
-    ) {
+    if (user !== null) {
+      if (
+        props.user.uid !== '' &&
+        props.user.firstName !== '' &&
+        props.user.lastName !== '' &&
+        props.user.goals !== null &&
+        props.user.goals.length >= 3 &&
+        props.user.invested !== null &&
+        props.user.gender !== null
+      ) {
+        setAuthenticating(false);
+        setInitializing(false);
+      } else {
+      }
+    } else if (user !== null) {
       setAuthenticating(false);
+      setInitializing(false);
     } else {
       setAuthenticating(true);
+      setInitializing(false);
     }
   }, [user, props.user]);
 
-  if (initializing) {
+  if (initializing || authenticating === undefined) {
     return <LoadingScreen />;
+  } else {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+        }}>
+        {!authenticating ? <AppContent /> : <AuthContent />}
+      </SafeAreaView>
+    );
   }
-  return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-      }}>
-      {!authenticating ? <AppContent /> : <AuthContent />}
-    </SafeAreaView>
-  );
 }
 
 const mapStateToProps = (state: AppState) => ({

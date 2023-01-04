@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import CloseIcon from '../../assets/icons/Utils/CloseIcon';
-import { Black, HeaderColor } from '../../assets/styles';
+import { Black, HeaderColor } from '../../assets/styles/RegularTheme';
 
 export const DescriptionModal = (props: {
   header: string;
@@ -26,7 +26,9 @@ export const DescriptionModal = (props: {
       <View style={styles.modalView}>
         <Text style={styles.modalHeader}>{props.header}</Text>
         <Text style={styles.modalText}>{props.content}</Text>
-        <TouchableNativeFeedback onPress={props.toggleModal}>
+        <TouchableNativeFeedback
+          onPress={props.toggleModal}
+          style={styles.closeIconContainer}>
           <CloseIcon />
         </TouchableNativeFeedback>
       </View>
@@ -45,6 +47,7 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
   },
   textStyle: {
     color: 'white',
@@ -68,5 +71,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: Black,
     alignSelf: 'baseline',
+  },
+  closeIconContainer: {
+    width: 20,
+    height: 20,
   },
 });

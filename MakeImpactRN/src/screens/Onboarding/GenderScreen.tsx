@@ -4,25 +4,29 @@ import {
   MainTextWhite,
   MIGreen,
   OnboardingBackgroundColors,
-} from '../../assets/styles';
+  Black,
+} from '../../assets/styles/RegularTheme';
 
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { OnboardingBottomNavigation } from '../../components/NavigationBars/OnboardingBottomNavigation';
 import { connect } from 'react-redux';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { Header, SecondaryText, SelectionButton } from '../../components';
-import { Black } from '../../assets/styles/RegularTheme';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
+import {
+  OnboardingBottomNavigation,
+  Header,
+  SecondaryText,
+  SelectionButton,
+} from '../../components';
 import Gender from '../../utils/enums/Gender';
 import { updateGender } from '../../api/firebase/user';
 import { useState } from 'react';
 import { AppState } from '../../state/store';
+import GenderIcon from '../../assets/icons/Onboarding/GenderIcon';
+import { AuthorizedStackParamList } from '../../navigation/AuthContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  typeof mapDispatchToProps &
+  NativeStackScreenProps<AuthorizedStackParamList, 'Gender'>;
 
 const GenderScreen = (props: Props) => {
   const [gender, setGender] = useState<Gender | null>(props.gender);
@@ -35,6 +39,7 @@ const GenderScreen = (props: Props) => {
         <SecondaryText
           text={'Tell us a bit more about how you define yourself.'}
         />
+        <GenderIcon height={120} width={120} style={styles.genderIcon} />
         <View style={styles.selectionButton}>
           <SelectionButton
             content={Gender.Male}
@@ -81,9 +86,8 @@ const GenderScreen = (props: Props) => {
         </View>
       </SafeAreaView>
       <OnboardingBottomNavigation
-        goBack={true}
-        navigation={props.navigation}
-        nextPage={props.route.params.nextScreen}
+        goBack={props.navigation.goBack}
+        goNextPage={() => props.navigation.navigate('Invested')}
         onClick={() =>
           updateGender(gender !== null ? gender : Gender.PreferNotToSay)
         }
@@ -120,7 +124,10 @@ const styles = StyleSheet.create({
   selectionButton: {
     width: '90%',
     height: 50,
-    marginVertical: 10,
+    marginVertical: 5,
+  },
+  genderIcon: {
+    marginVertical: 15,
   },
 });
 

@@ -7,10 +7,12 @@ import {
   SASB,
   SDG,
   Sector,
+  Text,
   TradingData,
 } from '../../types';
 
 interface AppData {
+  texts: Text[];
   tradingData: TradingData[];
   sdgs: SDG[];
   companies: Company[];
@@ -22,6 +24,7 @@ interface AppData {
 }
 
 const initialState = {
+  texts: [],
   tradingData: [],
   sdgs: [],
   companies: [],
@@ -36,6 +39,9 @@ const tempUserSlice = createSlice({
   name: 'tempUser',
   initialState,
   reducers: {
+    receiveTexts(state, action: PayloadAction<Text[]>) {
+      state.texts = action.payload;
+    },
     receiveSDGs(state, action: PayloadAction<SDG[]>) {
       state.sdgs = action.payload;
     },
@@ -61,13 +67,15 @@ const tempUserSlice = createSlice({
       state.academyArticles = action.payload;
     },
     calculateCompaniesMatch(state, action: PayloadAction<string[]>) {
-      for (let i = 0; i < state.companies.length; i++) {
-        const company = state.companies[i];
-        company.match = 0;
-        for (let j = 0; j < action.payload.length; j++) {
-          const sdgId = action.payload[j];
-          if (company.sdgs.includes(sdgId)) {
-            company.match += 100 / action.payload.length;
+      if (action.payload !== null && action.payload !== undefined) {
+        for (let i = 0; i < state.companies.length; i++) {
+          const company = state.companies[i];
+          company.match = 0;
+          for (let j = 0; j < action.payload.length; j++) {
+            const sdgId = action.payload[j];
+            if (company.sdgs.includes(sdgId)) {
+              company.match += 100 / action.payload.length;
+            }
           }
         }
       }
@@ -96,6 +104,7 @@ export const {
   assignTradingDataToCompanies,
   receiveAcademyCategories,
   receiveAcademyArticles,
+  receiveTexts,
 } = tempUserSlice.actions;
 
 export default tempUserSlice.reducer;

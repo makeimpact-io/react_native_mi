@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { OnboardingBackgroundColors } from '../../assets/styles';
+import { ScrollView, StyleSheet, View, SafeAreaView } from 'react-native';
+import { OnboardingBackgroundColors } from '../../assets/styles/RegularTheme';
 
 import LinearGradient from 'react-native-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import {
   OnboardingBottomNavigation,
   SecondaryText,
@@ -16,17 +15,18 @@ import {
 import { updateGoals } from '../../api/firebase/user';
 import { setRegistering } from '../../state/app/appSlice';
 import { useState } from 'react';
+import { LoadingScreen } from '../Utils/LoadingScreen';
+import { AuthorizedStackParamList } from '../../navigation/AuthContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<AuthorizedStackParamList, 'Goals'>;
 
 const GoalsScreen = (props: Props) => {
   const [userGoals, setUserGoals] = useState<string[]>(
     props.userGoals === null ? [] : props.userGoals,
   );
+  const [loading, setLoading] = useState(false);
+
   const toggleGoal = (id: string) => {
     if (userGoals.includes(id)) {
       setUserGoals(userGoals.filter(g => g !== id));
@@ -36,28 +36,27 @@ const GoalsScreen = (props: Props) => {
   };
 
   let sdgs = props.sdgs
+    .concat()
+    .sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10))
     .map(sdg => {
-      return {
-        id: parseInt(sdg.id, 10),
-        component: (
-          <View style={styles.sdg} key={sdg.id}>
-            <SDGActionButton
-              key={sdg.id}
-              onClick={() => toggleGoal(sdg.id)}
-              active={userGoals.includes(sdg.id)}
-              activeImage={sdg.greenImageLink}
-              inactiveImage={sdg.blackImageLink}
-            />
-          </View>
-        ),
-      };
-    })
-    .sort((a, b) => a.id - b.id);
+      return (
+        <View style={styles.sdg} key={sdg.id}>
+          <SDGActionButton
+            key={sdg.id}
+            onClick={() => toggleGoal(sdg.id)}
+            active={userGoals.includes(sdg.id)}
+            activeImage={sdg.greenImageLink}
+            inactiveImage={sdg.blackImageLink}
+          />
+        </View>
+      );
+    });
   return (
     <LinearGradient
       colors={OnboardingBackgroundColors}
       style={styles.background}>
       <SafeAreaView style={styles.container}>
+        {loading && <LoadingScreen />}
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollViewContainer}
@@ -67,20 +66,17 @@ const GoalsScreen = (props: Props) => {
             <SecondaryText
               text={'Select at least 3 values which matter most to you.'}
             />
-            <View style={styles.sdgsContainer}>
-              {sdgs.map(a => a.component)}
-            </View>
+            <View style={styles.sdgsContainer}>{sdgs}</View>
           </View>
         </ScrollView>
       </SafeAreaView>
       <OnboardingBottomNavigation
-        navigation={props.navigation}
-        nextPage={props.route.params.nextScreen}
+        goBack={() => props.navigation.goBack()}
         disabled={userGoals.length < 3}
         onClick={() => {
           updateGoals(userGoals);
+          setLoading(true);
         }}
-        goBack={true}
       />
     </LinearGradient>
   );

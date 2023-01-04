@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { White } from '../../assets/styles';
 import {
+  White,
   HeaderColor,
   CompanyListGrey,
   Black,

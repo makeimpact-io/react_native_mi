@@ -1,7 +1,10 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { White, CompanyListGrey } from '../../assets/styles';
-import { Black } from '../../assets/styles/RegularTheme';
+import {
+  Black,
+  White,
+  CompanyListGrey,
+} from '../../assets/styles/RegularTheme';
 import { Company, Sector } from '../../types';
 import { MatchChart } from '../Charts/MatchChart';
 
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     height: '100%',
-    width: 230,
+    width: '60%',
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
@@ -110,5 +113,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontSize: 10,
     fontWeight: '500',
+    color: CompanyListGrey,
   },
 });

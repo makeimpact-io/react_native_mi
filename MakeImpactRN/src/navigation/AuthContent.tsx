@@ -19,7 +19,24 @@ import { connect } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { NamesScreen } from '../screens/Onboarding/NamesScreen';
 
-const Stack = createNativeStackNavigator();
+export type UnauthorizedStackParamList = {
+  InitialScreen: undefined;
+  Login: undefined;
+  ForgottenPassword: undefined;
+  Register: undefined;
+};
+
+export type AuthorizedStackParamList = {
+  Names: undefined;
+  Gender: undefined;
+  Invested: undefined;
+  Goals: undefined;
+};
+
+const UnauthorizedStack =
+  createNativeStackNavigator<UnauthorizedStackParamList>();
+
+const AuthorizedStack = createNativeStackNavigator<AuthorizedStackParamList>();
 
 type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
@@ -32,7 +49,6 @@ function AuthContent(props: Props) {
         props.user.lastName === '' ||
         props.user.goals === null ||
         props.user.goals.length < 3 ||
-        props.user.goals.length !== 0 ||
         props.user.invested == null ||
         props.user.gender == null) &&
       props.user.email !== '' &&
@@ -45,92 +61,100 @@ function AuthContent(props: Props) {
   }, [props.user]);
 
   const onboardingHeader = (navigation: NativeStackHeaderProps) => {
+    const index = navigation.options.title;
     return (
-      <OnboardingNavigationBar navigation={navigation} index={0} length={5} />
+      <OnboardingNavigationBar
+        navigation={navigation}
+        index={index ? parseInt(index, 10) : 0}
+        length={4}
+      />
     );
   };
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        header: navigation => {
-          if (navigation.route.name !== 'InitialScreen') {
-            return <TopNavigationBar navigation={navigation} />;
-          }
-        },
-      }}>
-      {!showOnlyOnboarding ? (
-        <>
-          <Stack.Screen name="InitialScreen" component={InitialScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen
-            name="ForgottenPassword"
-            component={ForgottenPasswordScreen}
-            options={{
-              gestureDirection: 'horizontal',
-              animation: 'slide_from_right',
-              animationDuration: 1.2,
-            }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{
-              gestureDirection: 'horizontal',
-              animation: 'slide_from_right',
-              animationDuration: 1.2,
-            }}
-          />
-        </>
-      ) : (
-        <>
-          <Stack.Screen
-            name="Names"
-            component={NamesScreen}
-            options={{
-              gestureDirection: 'horizontal',
-              animation: 'slide_from_right',
-              animationDuration: 1.2,
-              header: onboardingHeader,
-            }}
-            initialParams={{ nextScreen: 'Gender', index: 1 }}
-          />
-          <Stack.Screen
-            name="Gender"
-            component={GenderScreen}
-            options={{
-              gestureDirection: 'horizontal',
-              animation: 'slide_from_right',
-              animationDuration: 1.2,
-              header: onboardingHeader,
-            }}
-            initialParams={{ nextScreen: 'Invested', index: 1 }}
-          />
-          <Stack.Screen
-            name="Invested"
-            component={InvestedScreen}
-            options={{
-              gestureDirection: 'horizontal',
-              animation: 'slide_from_right',
-              animationDuration: 1.2,
-              header: onboardingHeader,
-            }}
-            initialParams={{ nextScreen: 'Goals', index: 2 }}
-          />
-          <Stack.Screen
-            name="Goals"
-            component={GoalsScreen}
-            options={{
-              gestureDirection: 'horizontal',
-              animation: 'slide_from_right',
-              animationDuration: 1.2,
-              header: onboardingHeader,
-            }}
-            initialParams={{ index: 3 }}
-          />
-        </>
-      )}
-    </Stack.Navigator>
-  );
+  if (showOnlyOnboarding) {
+    return (
+      <AuthorizedStack.Navigator>
+        <AuthorizedStack.Screen
+          name="Names"
+          component={NamesScreen}
+          options={{
+            gestureDirection: 'horizontal',
+            animation: 'slide_from_right',
+            animationDuration: 1.2,
+            header: onboardingHeader,
+            headerTitle: '1',
+          }}
+        />
+        <AuthorizedStack.Screen
+          name="Gender"
+          component={GenderScreen}
+          options={{
+            gestureDirection: 'horizontal',
+            animation: 'slide_from_right',
+            animationDuration: 1.2,
+            header: onboardingHeader,
+            headerTitle: '2',
+          }}
+        />
+        <AuthorizedStack.Screen
+          name="Invested"
+          component={InvestedScreen}
+          options={{
+            gestureDirection: 'horizontal',
+            animation: 'slide_from_right',
+            animationDuration: 1.2,
+            header: onboardingHeader,
+            headerTitle: '3',
+          }}
+        />
+        <AuthorizedStack.Screen
+          name="Goals"
+          component={GoalsScreen}
+          options={{
+            gestureDirection: 'horizontal',
+            animation: 'slide_from_right',
+            animationDuration: 1.2,
+            header: onboardingHeader,
+            headerTitle: '4',
+          }}
+        />
+      </AuthorizedStack.Navigator>
+    );
+  } else {
+    return (
+      <UnauthorizedStack.Navigator
+        screenOptions={{
+          header: navigation => {
+            if (navigation.route.name !== 'InitialScreen') {
+              return <TopNavigationBar navigation={navigation} />;
+            }
+          },
+        }}>
+        <UnauthorizedStack.Screen
+          name="InitialScreen"
+          component={InitialScreen}
+        />
+        <UnauthorizedStack.Screen name="Login" component={LoginScreen} />
+        <UnauthorizedStack.Screen
+          name="ForgottenPassword"
+          component={ForgottenPasswordScreen}
+          options={{
+            gestureDirection: 'horizontal',
+            animation: 'slide_from_right',
+            animationDuration: 1.2,
+          }}
+        />
+        <UnauthorizedStack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{
+            gestureDirection: 'horizontal',
+            animation: 'slide_from_right',
+            animationDuration: 1.2,
+          }}
+        />
+      </UnauthorizedStack.Navigator>
+    );
+  }
 }
 const mapStateToProps = (state: AppState) => ({
   user: state.userReducer,

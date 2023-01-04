@@ -1,37 +1,42 @@
 import * as React from 'react';
 import { StyleSheet, SafeAreaView, View } from 'react-native';
-import { AppBackgroundColors, Black, MIPink } from '../../assets/styles';
+import {
+  AppBackgroundColors,
+  Black,
+  MIPink,
+} from '../../assets/styles/RegularTheme';
 
 import LinearGradient from 'react-native-linear-gradient';
 import {
   InputField,
-  ActionButton,
+  DefaultButton,
   SecondaryText,
   Header,
+  ErrorModal,
+  SuccessfulOrderModal,
 } from '../../components';
 import { validateEmail } from '../../utils/validation/InputValidator';
-import { useContext, useState } from 'react';
-import { AuthContext } from '../../navigation/AuthProvider';
-import { ErrorModal } from '../../components/Modals/ErrorModal';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { useState } from 'react';
+import { passwordReset } from '../../api/firebase/auth';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { UnauthorizedStackParamList } from '../../navigation/AuthContent';
 
-export const ForgottenPasswordScreen = (props: {
-  navigation: NativeStackNavigationHelpers;
-}) => {
+type Props = NativeStackScreenProps<
+  UnauthorizedStackParamList,
+  'ForgottenPassword'
+>;
+
+export const ForgottenPasswordScreen = (props: Props) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(false);
-
-  const authContext = useContext(AuthContext);
+  const [success, setSuccess] = useState(false);
 
   const resetPassword = async () => {
-    const result = await authContext?.passwordReset(email);
+    const result = await passwordReset(email);
     if (result) {
       setError(true);
     } else {
-      alert(
-        'You will receive an email shortly with information how to reset your password.',
-      );
-      props.navigation.navigate('Login');
+      setSuccess(true);
     }
   };
 
@@ -44,6 +49,14 @@ export const ForgottenPasswordScreen = (props: {
         hideModalText={'TRY AGAIN'}
         toggleModal={() => setError(!error)}
         showModal={error}
+      />
+      <SuccessfulOrderModal
+        text={
+          'You will receive an email shortly with information how to reset your password.'
+        }
+        showModal={success}
+        buttonText={'Go to Login.'}
+        onClick={() => props.navigation.navigate('Login')}
       />
       <View style={styles.screenHeader}>
         <Header text={'Forgot your password?'} />
@@ -64,7 +77,7 @@ export const ForgottenPasswordScreen = (props: {
           />
         </View>
         <View style={styles.button}>
-          <ActionButton
+          <DefaultButton
             content={'RESET PASSWORD'}
             backgroundColor={MIPink}
             textColor={Black}

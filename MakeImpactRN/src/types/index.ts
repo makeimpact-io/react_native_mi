@@ -7,3 +7,5 @@ export type { User } from './User';
 export type { TradingData } from './TradingData';
 export type { AcademyCategory } from './AcademyCategory';
 export type { AcademyArticle } from './AcademyArticle';
+export type { Text } from './Text';
+export type { ActiveOrder } from './ActiveOrder';

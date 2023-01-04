@@ -6,42 +6,46 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
 } from 'react-native';
-import { AppBackgroundColors, MIPink } from '../../assets/styles';
+import {
+  AppBackgroundColors,
+  MIPink,
+  Black,
+  White,
+} from '../../assets/styles/RegularTheme';
 
 import LinearGradient from 'react-native-linear-gradient';
-import { InputField } from '../../components/InputField/InputField';
-import { useContext, useState } from 'react';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { ActionButton } from '../../components/Button/ActionButton/ActionButton';
-import { Black, White } from '../../assets/styles/RegularTheme';
+import {
+  InputField,
+  DefaultButton,
+  Header,
+  SecondaryText,
+  ErrorModal,
+} from '../../components/';
+import { useState } from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import {
   validateEmail,
   validatePassword,
 } from '../../utils/validation/InputValidator';
-import { AuthContext } from '../../navigation/AuthProvider';
-import { Header, SecondaryText } from '../../components';
-import { ErrorModal } from '../../components/Modals/ErrorModal';
+import { login } from '../../api/firebase/auth';
+import { UnauthorizedStackParamList } from '../../navigation/AuthContent';
 
-export const LoginScreen = ({
-  navigation,
-}: {
-  navigation: NativeStackNavigationHelpers;
-}) => {
+type Props = NativeStackScreenProps<UnauthorizedStackParamList, 'Login'>;
+
+export const LoginScreen = (props: Props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('Invalid attempt');
 
-  const authContext = useContext(AuthContext);
-
-  const login = async function () {
+  const singIn = async function () {
     if (
       validatePassword(password) &&
       validateEmail(email) &&
       password !== '' &&
       email !== ''
     ) {
-      const result = await authContext?.login(email, password);
+      const result = await login(email, password);
       if (result) {
         setErrorMsg('The email address or password is incorrect!');
         setError(true);
@@ -85,7 +89,7 @@ export const LoginScreen = ({
         <View style={styles.forgottenPasswordContainer}>
           <TouchableWithoutFeedback
             onPress={() => {
-              navigation.navigate('ForgottenPassword');
+              props.navigation.navigate('ForgottenPassword');
             }}>
             <Text style={styles.forgottenPassword}>
               I've forgotten my password
@@ -93,11 +97,11 @@ export const LoginScreen = ({
           </TouchableWithoutFeedback>
         </View>
         <View style={styles.button}>
-          <ActionButton
+          <DefaultButton
             content={'LOG IN'}
             backgroundColor={MIPink}
             textColor={Black}
-            action={login}
+            action={singIn}
           />
         </View>
       </SafeAreaView>
@@ -112,8 +116,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   screenHeader: {
-    height: 200,
-    paddingTop: 100,
+    height: '10%',
+    marginTop: 80,
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
@@ -123,7 +128,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputContainer: {
-    height: 200,
+    height: '50%',
     width: '100%',
     display: 'flex',
     justifyContent: 'space-evenly',

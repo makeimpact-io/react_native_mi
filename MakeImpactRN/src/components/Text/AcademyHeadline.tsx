@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
-import { White } from '../../assets/styles';
+import { White } from '../../assets/styles/RegularTheme';
 
 export const AcademyHeadline = (props: {
   text: String;

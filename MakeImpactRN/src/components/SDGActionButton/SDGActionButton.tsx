@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, TouchableNativeFeedback } from 'react-native';
 
 export const SDGActionButton = (props: {
   onClick: () => any;
@@ -9,18 +9,18 @@ export const SDGActionButton = (props: {
 }) => {
   if (props.active) {
     return (
-      <TouchableOpacity style={styles.container} onPress={props.onClick}>
+      <TouchableNativeFeedback style={styles.container} onPress={props.onClick}>
         <Image
           style={styles.image}
           source={{
             uri: props.activeImage,
           }}
         />
-      </TouchableOpacity>
+      </TouchableNativeFeedback>
     );
   } else {
     return (
-      <TouchableOpacity
+      <TouchableNativeFeedback
         style={styles.container}
         onPress={() => props.onClick()}>
         <Image
@@ -29,7 +29,7 @@ export const SDGActionButton = (props: {
             uri: props.inactiveImage,
           }}
         />
-      </TouchableOpacity>
+      </TouchableNativeFeedback>
     );
   }
 };

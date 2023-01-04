@@ -1,23 +1,25 @@
 import * as React from 'react';
 import { View, StyleSheet, SafeAreaView, Text } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
+
 import {
   AppBackgroundColors,
   Black,
   MIGreen,
   MIPink,
-} from '../../assets/styles';
+} from '../../assets/styles/RegularTheme';
 
-import LinearGradient from 'react-native-linear-gradient';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { ActionButton } from '../../components/Button/ActionButton/ActionButton';
-import { Header } from '../../components/Text/Header';
+import { Header, DefaultButton } from '../../components/';
 import PinkWaveWelcome from '../../assets/icons/PinkWaves/PinkWaveWelcome';
+import { UnauthorizedStackParamList } from '../../navigation/AuthContent';
 
-export const InitialScreen = ({
-  navigation,
-}: {
-  navigation: NativeStackNavigationHelpers;
-}) => {
+type Props = NativeStackScreenProps<
+  UnauthorizedStackParamList,
+  'InitialScreen'
+>;
+
+export const InitialScreen = (props: Props) => {
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <View style={styles.headerContainer}>
@@ -30,22 +32,22 @@ export const InitialScreen = ({
           <Header text={'Hey impactor!'} />
         </View>
         <View style={styles.button}>
-          <ActionButton
+          <DefaultButton
             content={'CREATE MY ACCOUNT'}
             backgroundColor={MIGreen}
             textColor={MIPink}
             action={() => {
-              navigation.navigate('Register');
+              props.navigation.navigate('Register');
             }}
           />
         </View>
         <View style={styles.button}>
-          <ActionButton
+          <DefaultButton
             content={'LOG IN'}
             backgroundColor={MIPink}
             textColor={Black}
             action={() => {
-              navigation.navigate('Login');
+              props.navigation.navigate('Login');
             }}
           />
         </View>

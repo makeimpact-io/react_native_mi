@@ -6,8 +6,11 @@ import {
   Text,
   TextInput,
 } from 'react-native';
-import { MainTextWhite, TertiaryText } from '../../assets/styles';
-import { Black } from '../../assets/styles/RegularTheme';
+import {
+  Black,
+  MainTextWhite,
+  TertiaryText,
+} from '../../assets/styles/RegularTheme';
 
 export const InputField = (props: {
   placeholder: string;

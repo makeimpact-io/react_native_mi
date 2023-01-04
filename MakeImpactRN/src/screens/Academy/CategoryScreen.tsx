@@ -1,19 +1,25 @@
 import * as React from 'react';
-import { StyleSheet, SafeAreaView, ScrollView, View, Text } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
+import {
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  Image,
+  Dimensions,
+} from 'react-native';
+import { AppBackgroundColors, White } from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { AcademyArticle, AcademyCategory } from '../../types';
 import { useEffect, useState } from 'react';
-import { AcademyHeadline, ArticleView } from '../../components';
+import { AcademyHeadline, ArticleCard } from '../../components';
+import { RootStackNavigationParamList } from '../../navigation/App/AppContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<RootStackNavigationParamList, 'Category'>;
 
 const CategoryScreen = (props: Props) => {
   const category = props.route.params.category as AcademyCategory;
@@ -32,7 +38,10 @@ const CategoryScreen = (props: Props) => {
           <ScrollView
             style={styles.scrollContainer}
             showsVerticalScrollIndicator={false}>
-            <View style={styles.header} />
+            <Image
+              style={styles.headerImage}
+              source={{ uri: category.coverImage }}
+            />
             <Text>{category.name}</Text>
           </ScrollView>
         </SafeAreaView>
@@ -42,7 +51,7 @@ const CategoryScreen = (props: Props) => {
     const articlesToRender = articles.map(article => {
       return (
         <View style={styles.articleContainer} key={article.id}>
-          <ArticleView
+          <ArticleCard
             article={article}
             onClick={() =>
               props.navigation.navigate('Article', { article: article })
@@ -58,8 +67,15 @@ const CategoryScreen = (props: Props) => {
           <ScrollView
             style={styles.scrollContainer}
             showsVerticalScrollIndicator={false}>
-            <View style={styles.header} />
-            <AcademyHeadline text={category.name} />
+            <View style={styles.headerContainer}>
+              <Image
+                style={styles.headerImage}
+                source={{ uri: category.coverImage }}
+              />
+            </View>
+            <View style={styles.headlineContainer}>
+              <AcademyHeadline text={category.name} />
+            </View>
             <View style={styles.articlesTable}>{articlesToRender}</View>
           </ScrollView>
         </SafeAreaView>
@@ -87,7 +103,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -95,9 +111,19 @@ const styles = StyleSheet.create({
   scrollContainer: {
     width: '100%',
   },
-  header: {
-    height: 150,
+  headerContainer: {
     width: '100%',
+    height: 160,
+    borderColor: White,
+    borderBottomWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  headerImage: {
+    width: 150,
+    height: 150,
+    resizeMode: 'stretch',
   },
   articlesTable: {
     display: 'flex',
@@ -105,9 +131,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignSelf: 'center',
   },
   articleContainer: {
     paddingVertical: 10,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: Dimensions.get('screen').width / 2,
+    height: Dimensions.get('screen').width / 2 + 30,
+  },
+  headlineContainer: {
+    paddingLeft: 20,
   },
 });
 

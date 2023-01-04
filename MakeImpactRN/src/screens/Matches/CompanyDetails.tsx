@@ -7,26 +7,27 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
+import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { CompanyDetailsGrey, White } from '../../assets/styles/RegularTheme';
-import { Image } from 'react-native-elements';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { useEffect, useState } from 'react';
 import { getStocksData } from '../../api/firebase/data';
-import { DataTable, SectorHeader, StocksChart } from '../../components';
+import {
+  CompanyDataTable,
+  SectorHeader,
+  StocksChart,
+  CompanyDetailsHeader,
+} from '../../components';
+import { RootStackNavigationParamList } from '../../navigation/App/AppContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<RootStackNavigationParamList, 'CompanyDetails'>;
 
 const CompanyDetails = (props: Props) => {
   const company = props.route.params.company;
-  const sector = props.sectors.find(sector => sector.id === company?.sectorId);
+  const sector = props.sectors.find(s => s.id === company?.sectorId);
   const [stockData, setStockData] = useState<Map<string, string>>(
     new Map<string, string>(),
   );
@@ -38,8 +39,8 @@ const CompanyDetails = (props: Props) => {
         const companyStockData = new Map<string, string>();
         if (stocksData) {
           for (let i = 0; i < stocksData.DateAndPrice.length; i++) {
-            const stockData = stocksData.DateAndPrice[i];
-            companyStockData.set(stockData.date, stockData.value);
+            const stockInfo = stocksData.DateAndPrice[i];
+            companyStockData.set(stockInfo.date, stockInfo.value);
           }
           setStockData(companyStockData);
           setChartLoading(false);
@@ -57,31 +58,22 @@ const CompanyDetails = (props: Props) => {
           <ScrollView
             style={styles.scrollContainer}
             showsVerticalScrollIndicator={false}>
-            <View style={styles.companyDetails}>
-              <View style={styles.logoContainer}>
-                <Image
-                  style={styles.companyLogo}
-                  source={{
-                    uri: company?.logo,
-                  }}
+            <CompanyDetailsHeader company={company} sector={sector} />
+            {/* {showBuyButton && (
+              <View style={styles.tradingButton}>
+                <DefaultButton
+                  content={'Invest'}
+                  backgroundColor={MIPink}
+                  textColor={Black}
+                  action={() =>
+                    props.navigation.navigate('BuyStock', {
+                      company: company,
+                      sector: sector,
+                    })
+                  }
                 />
               </View>
-              <View style={styles.nameContainer}>
-                <Text style={styles.companyName}>{company?.name}</Text>
-                <Text style={styles.sectorName}>{sector?.name}</Text>
-              </View>
-              <View style={styles.stockPriceContainer}>
-                <Text style={styles.stockPrice}>
-                  {company.tradingData &&
-                  company.tradingData.priceLastClose !== '-'
-                    ? company.tradingData.currency +
-                      ' ' +
-                      company.tradingData.priceLastClose
-                    : 'NaN'}
-                </Text>
-                <Text style={styles.growthPercent}>%/12M</Text>
-              </View>
-            </View>
+            )} */}
             <View style={styles.chartContainer}>
               {chartLoading ? (
                 <Text>Loading...</Text>
@@ -97,7 +89,7 @@ const CompanyDetails = (props: Props) => {
                 <View style={styles.sectorHeaderContainer}>
                   <SectorHeader text={'Stock Data'} />
                 </View>
-                <DataTable
+                <CompanyDataTable
                   data={
                     new Map([
                       [
@@ -137,7 +129,7 @@ const CompanyDetails = (props: Props) => {
               <View style={styles.sectorHeaderContainer}>
                 <SectorHeader text={'Company Data'} />
               </View>
-              <DataTable
+              <CompanyDataTable
                 data={
                   new Map([
                     ['Country', { text: company.countryId }],
@@ -194,68 +186,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 30,
   },
   scrollContainer: {
     width: '100%',
-  },
-  companyDetails: {
-    display: 'flex',
-    width: '95%',
-    height: 80,
-    paddingTop: 20,
-    marginBottom: 20,
-    flexDirection: 'row',
-  },
-  logoContainer: {
-    width: 60,
-    height: 60,
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center',
-    borderRadius: 30,
-    backgroundColor: White,
-  },
-  companyLogo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  nameContainer: {
-    height: '100%',
-    width: 200,
-    display: 'flex',
-    paddingLeft: 20,
-    justifyContent: 'flex-start',
-    alignContent: 'center',
-  },
-  companyName: {
-    fontFamily: 'Inter',
-    fontSize: 24,
-    fontWeight: '600',
-    color: White,
-    opacity: 0.8,
-  },
-  sectorName: {
-    fontFamily: 'Inter',
-    fontSize: 14,
-    color: CompanyDetailsGrey,
-  },
-  stockPriceContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingLeft: 15,
-  },
-  stockPrice: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: White,
-  },
-  growthPercent: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: CompanyDetailsGrey,
   },
   chartContainer: {
     paddingBottom: 10,
@@ -269,6 +202,12 @@ const styles = StyleSheet.create({
   },
   sectorHeaderContainer: {
     marginBottom: 10,
+  },
+  tradingButton: {
+    width: 100,
+    height: 40,
+    marginLeft: 30,
+    marginBottom: 20,
   },
 });
 

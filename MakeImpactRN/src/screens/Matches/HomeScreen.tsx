@@ -1,21 +1,21 @@
 import * as React from 'react';
 import { StyleSheet, SafeAreaView, View, FlatList, Text } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
 import LinearGradient from 'react-native-linear-gradient';
-import { SecondaryHeader } from '../../components';
+import { SecondaryHeader, CompanyListItem } from '../../components';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { Company } from '../../types';
-import { CompanyListItem } from '../../components/Company/CompanyListItem';
-import { Black, MIPink } from '../../assets/styles/RegularTheme';
+import {
+  Black,
+  MIPink,
+  AppBackgroundColors,
+} from '../../assets/styles/RegularTheme';
 import { useEffect, useState } from 'react';
+import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
+import { MatchesNavigationParamList } from '../../navigation/App/SubNavigations/MatchesNavigation';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  MaterialTopTabScreenProps<MatchesNavigationParamList, 'Home'>;
 
 const HomeScreen = (props: Props) => {
   const [matchingCompanies, setMatchingCompanies] = useState<Company[]>([]);
@@ -37,7 +37,9 @@ const HomeScreen = (props: Props) => {
           sector={sector}
           match={company.match >= 0 ? company.match.toFixed(0) : 'Nah'}
           onClick={() =>
-            props.navigation.navigate('CompanyDetails', { company: company })
+            props.navigation
+              .getParent()
+              ?.navigate('CompanyDetails', { company: company })
           }
         />
       </View>
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    paddingTop: 100,
+    paddingTop: 80,
   },
   container: {
     flex: 1,

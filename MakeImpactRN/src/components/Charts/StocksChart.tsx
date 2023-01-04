@@ -7,7 +7,12 @@ import {
   View,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { MIGreen, MIPink, PrimaryGrey, White } from '../../assets/styles';
+import {
+  MIGreen,
+  MIPink,
+  PrimaryGrey,
+  White,
+} from '../../assets/styles/RegularTheme';
 
 const screenWidth = Dimensions.get('window').width;
 const chartConfig = {

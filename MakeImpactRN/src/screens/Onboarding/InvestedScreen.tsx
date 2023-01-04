@@ -1,31 +1,31 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import {
   MainTextWhite,
   MIGreen,
   OnboardingBackgroundColors,
-} from '../../assets/styles';
+  Black,
+} from '../../assets/styles/RegularTheme';
 
 import LinearGradient from 'react-native-linear-gradient';
-import { Header } from '../../components/Text/Header';
-import { SecondaryText } from '../../components/Text/SecondaryText';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { OnboardingBottomNavigation } from '../../components/NavigationBars/OnboardingBottomNavigation';
+import {
+  Header,
+  SecondaryText,
+  OnboardingBottomNavigation,
+  SelectionButton,
+} from '../../components/';
 import { connect } from 'react-redux';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { Black } from '../../assets/styles/RegularTheme';
-import { SelectionButton } from '../../components';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import Invested from '../../utils/enums/Invested';
 import { updateInvested } from '../../api/firebase/user';
 import { setRegistering } from '../../state/app/appSlice';
 import { useState } from 'react';
 import { AppState } from '../../state/store';
+import InvestingIcon from '../../assets/icons/Onboarding/InvestingIcon';
+import { AuthorizedStackParamList } from '../../navigation/AuthContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<AuthorizedStackParamList, 'Invested'>;
 
 const InvestedScreen = (props: Props) => {
   const [invested, setInvested] = useState<Invested | null>(props.invested);
@@ -38,6 +38,7 @@ const InvestedScreen = (props: Props) => {
         <SecondaryText
           text={'Help us to guide you through your investment journey.'}
         />
+        <InvestingIcon height={120} width={120} style={styles.investingIcon} />
         <View style={styles.selectionButton}>
           <SelectionButton
             content={Invested.Experienced}
@@ -73,13 +74,12 @@ const InvestedScreen = (props: Props) => {
         </View>
       </SafeAreaView>
       <OnboardingBottomNavigation
-        navigation={props.navigation}
-        nextPage={props.route.params.nextScreen}
+        goBack={() => props.navigation.goBack()}
+        goNextPage={() => props.navigation.navigate('Goals')}
         disabled={invested === null}
         onClick={() => {
           updateInvested(invested != null ? invested : Invested.None);
         }}
-        goBack={true}
       />
     </LinearGradient>
   );
@@ -114,7 +114,10 @@ const styles = StyleSheet.create({
   selectionButton: {
     width: '90%',
     height: 50,
-    marginVertical: 10,
+    marginVertical: 5,
+  },
+  investingIcon: {
+    marginVertical: 15,
   },
 });
 
