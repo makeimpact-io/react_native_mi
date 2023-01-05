@@ -12,12 +12,18 @@ import { Company, Sector } from '../../types';
 export const CompanyStockItem = (props: {
   company: Company;
   sector: Sector;
-  stocks: Number;
+  stocks: number;
   price: string;
-  positionChange: string;
+  positionChange: number;
+  currency: string;
   isProfitable: boolean;
   onClick: () => void;
 }) => {
+  const companyName =
+    props.company.name.slice(
+      0,
+      props.company.name.length > 18 ? 18 : props.company.name.length,
+    ) + (props.company.name.length > 18 ? '...' : '');
   return (
     <TouchableOpacity style={styles.container} onPress={props.onClick}>
       <View style={styles.logoContainer}>
@@ -29,22 +35,17 @@ export const CompanyStockItem = (props: {
         />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.companyName}>
-          {props.company.name.slice(
-            0,
-            props.company.name.length > 18 ? 18 : props.company.name.length,
-          ) + (props.company.name.length > 18 ? '...' : '')}
-        </Text>
+        <Text style={styles.companyName}>{companyName}</Text>
         <Text style={styles.sectorName}>{props.sector.name}</Text>
         <View style={styles.stockPriceContainer}>
-          <Text style={styles.stockPrice}>{props.price}</Text>
+          <Text style={styles.stockPrice}>{props.currency + props.price}</Text>
           <Text
             style={
               props.isProfitable
                 ? [styles.stockPrice, styles.stockGrow]
                 : [styles.stockPrice, styles.stockDeficit]
             }>
-            {props.positionChange}
+            {props.positionChange.toFixed(2) + '%'}
           </Text>
         </View>
       </View>

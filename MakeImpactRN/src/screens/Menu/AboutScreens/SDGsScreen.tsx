@@ -28,29 +28,24 @@ type Props = ReturnType<typeof mapStateToProps> &
 const SDGsScreen = (props: Props) => {
   const [sdgToShow, setSdgToShow] = useState(props.sdgs[0]);
   const [showModal, setShowModal] = useState(false);
+
   let sdgs = props.sdgs
+    .concat()
+    .sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10))
     .map(sdg => {
-      return {
-        id: parseInt(sdg.id, 10),
-        component: (
-          <>
-            <TouchableNativeFeedback
-              style={styles.goal}
-              key={sdg.id}
-              onPress={() => {
-                setSdgToShow(sdg);
-                setShowModal(true);
-              }}>
-              <Image
-                source={{ uri: sdg.blackImageLink }}
-                style={styles.sdgImage}
-              />
-            </TouchableNativeFeedback>
-          </>
-        ),
-      };
-    })
-    .sort((a, b) => a.id - b.id);
+      return (
+        <TouchableNativeFeedback
+          style={styles.goal}
+          key={sdg.id}
+          onPress={() => {
+            setSdgToShow(sdg);
+            setShowModal(true);
+          }}>
+          <Image source={{ uri: sdg.blackImageLink }} style={styles.sdgImage} />
+        </TouchableNativeFeedback>
+      );
+    });
+
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>
@@ -70,7 +65,7 @@ const SDGsScreen = (props: Props) => {
             better and more sustainable future. They are also known as the
             Global Goals and were adopted by all the UN Member States in 2015.
           </Text>
-          <View style={styles.sdgsContainer}>{sdgs.map(a => a.component)}</View>
+          <View style={styles.sdgsContainer}>{sdgs}</View>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -104,7 +99,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 80,
+    paddingTop: 30,
   },
   subtitle: {
     color: TertiaryText,

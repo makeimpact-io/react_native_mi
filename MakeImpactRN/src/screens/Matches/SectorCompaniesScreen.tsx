@@ -5,8 +5,12 @@ import {
   ScrollView,
   View,
   Pressable,
+  Text,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
+import {
+  AppBackgroundColors,
+  MainTextWhite,
+} from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
@@ -35,7 +39,6 @@ const SectorCompaniesScreen = (props: Props) => {
       props.companies.filter(company => company.sectorId === sector.id),
     );
   }, [props.companies, sector.id]);
-
   const companiesToRender = sectorCompanies.map(company => {
     return (
       <View style={styles.companyContainer} key={company.id}>
@@ -72,7 +75,13 @@ const SectorCompaniesScreen = (props: Props) => {
               showModal={showModal}
             />
           </View>
-          <View style={styles.companiesContainer}>{companiesToRender}</View>
+          {sectorCompanies.length !== 0 ? (
+            <View style={styles.companiesContainer}>{companiesToRender}</View>
+          ) : (
+            <Text style={styles.noCompaniesText}>
+              There are currently no companies belonging to this sector.
+            </Text>
+          )}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -139,6 +148,13 @@ const styles = StyleSheet.create({
   },
   questionMarkContainer: {
     marginRight: 20,
+  },
+  noCompaniesText: {
+    fontSize: 15,
+    marginTop: 10,
+    marginHorizontal: 15,
+    textAlign: 'center',
+    color: MainTextWhite,
   },
 });
 

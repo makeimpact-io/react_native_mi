@@ -20,7 +20,6 @@ import { SellStocksScreen } from '../../screens/Investing/TradeStocks/SellStocks
 import { AllCommitmentsScreen } from '../../screens/Matches/AllCommitmentsScreen';
 import { AllSectorsScreen } from '../../screens/Matches/AllSectorsScreen';
 import { CommitmentCompaniesScreen } from '../../screens/Matches/CommitmentCompaniesScreen';
-import { CompanyDetails } from '../../screens/Matches/CompanyDetails';
 import { SectorCompaniesScreen } from '../../screens/Matches/SectorCompaniesScreen';
 import { PrivacyPolicyScreen } from '../../screens/Menu/AboutScreens/PrivacyPolicyScreen';
 import { SDGsScreen } from '../../screens/Menu/AboutScreens/SDGsScreen';
@@ -35,6 +34,12 @@ import {
   Company,
   Sector,
 } from '../../types';
+import CompanyDetailsNavigation from './SubNavigations/CompanyDetailsNavigation';
+import { InvestingCompanyDetailsScreen } from '../../screens/Investing/Explore/InvestingCompanyDetailsScreen';
+import { InvestingCommitmentsScreen } from '../../screens/Investing/Explore/InvestingCommitmentsScreen';
+import { InvestingSectorsScreen } from '../../screens/Investing/Explore/InvestingSectorsScreen';
+import { InvestingCommitmentCompanies } from '../../screens/Investing/Explore/InvestingCommitmentCompanies';
+import { InvestingSectorCompanies } from '../../screens/Investing/Explore/InvestingSectorCompanies';
 
 export type BottomTabNavigationParamList = {
   Matches: undefined;
@@ -44,7 +49,7 @@ export type BottomTabNavigationParamList = {
 };
 
 export type RootStackNavigationParamList = {
-  Tabs: undefined;
+  Tabs: { screen?: string; params?: { screen?: string } };
   Commitments: undefined;
   CompanyDetails: { company: Company };
   CommitmentCompanies: { commitment: Commitment };
@@ -61,12 +66,16 @@ export type RootStackNavigationParamList = {
   };
   BuyStock: { company: Company; sector: Sector };
   SellStock: { company: Company; sector: Sector; availableStocks: number };
-  CompanyDetailsStocks: undefined;
   PrivacyPolicy: undefined;
   SDGS: undefined;
   Menu: undefined;
   Article: { article: AcademyArticle };
   Category: { category: AcademyCategory };
+  CompanyDetailsStocks: { company: Company };
+  InvestingCommitments: undefined;
+  InvestingCommitmentCompanies: { commitment: Commitment };
+  InvestingSectors: undefined;
+  InvestingSectorCompanies: { sector: Sector };
 };
 
 const Stack = createNativeStackNavigator<RootStackNavigationParamList>();
@@ -87,7 +96,10 @@ function AppContent() {
         <Stack.Screen name="Tabs" component={MainTabsNavigator} />
         <Stack.Group key={'Matches'}>
           <Stack.Screen name="Commitments" component={AllCommitmentsScreen} />
-          <Stack.Screen name="CompanyDetails" component={CompanyDetails} />
+          <Stack.Screen
+            name="CompanyDetails"
+            component={CompanyDetailsNavigation}
+          />
           <Stack.Screen
             name="CommitmentCompanies"
             component={CommitmentCompaniesScreen}
@@ -107,7 +119,23 @@ function AppContent() {
           <Stack.Screen name="SellStock" component={SellStocksScreen} />
           <Stack.Screen
             name="CompanyDetailsStocks"
-            component={UnderConstruction}
+            component={InvestingCompanyDetailsScreen}
+          />
+          <Stack.Screen
+            name="InvestingCommitments"
+            component={InvestingCommitmentsScreen}
+          />
+          <Stack.Screen
+            name="InvestingCommitmentCompanies"
+            component={InvestingCommitmentCompanies}
+          />
+          <Stack.Screen
+            name="InvestingSectors"
+            component={InvestingSectorsScreen}
+          />
+          <Stack.Screen
+            name="InvestingSectorCompanies"
+            component={InvestingSectorCompanies}
           />
         </Stack.Group>
         <Stack.Group key={'Menu'}>
@@ -131,11 +159,17 @@ const MainTabsNavigator = () => {
         headerShown: false,
         tabBarActiveTintColor: MIPink,
         tabBarLabelPosition: 'below-icon',
-        tabBarLabelStyle: { fontSize: 12, fontFamily: 'Barlow' },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontFamily: 'Barlow',
+        },
         tabBarStyle: {
           backgroundColor: Black,
           height: 60,
           opacity: 0.95,
+          borderWidth: 0,
+          shadowColor: Black,
+          borderColor: Black,
         },
       })}>
       <Tab.Screen

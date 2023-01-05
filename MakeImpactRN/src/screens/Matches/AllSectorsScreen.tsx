@@ -25,9 +25,7 @@ const AllSectorsScreen = (props: Props) => {
       <TouchableNativeFeedback
         key={sector.id}
         onPress={() =>
-          props.navigation
-            .getParent()
-            ?.navigate('SectorCompanies', { sector: sector })
+          props.navigation.navigate('SectorCompanies', { sector: sector })
         }>
         <Image style={styles.sectorIcon} source={{ uri: sector.iconLink }} />
       </TouchableNativeFeedback>

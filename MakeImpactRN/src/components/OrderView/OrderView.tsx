@@ -24,6 +24,12 @@ export const OrderView = (props: { order: ActiveOrder; company: Company }) => {
   const lastExecutionTime = new Date(props.order.lastExecutionTime_r)
     .toLocaleTimeString()
     .split(' ')[0];
+
+  const companyName =
+    props.company.name.slice(
+      0,
+      props.company.name.length > 18 ? 18 : props.company.name.length,
+    ) + (props.company.name.length > 18 ? '...' : '');
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback
@@ -35,9 +41,7 @@ export const OrderView = (props: { order: ActiveOrder; company: Company }) => {
             style={styles.companyLogo}
           />
           <View style={styles.companyInfoContainer}>
-            <Text style={styles.companyName}>
-              {props.company.name.slice(0, 12)}
-            </Text>
+            <Text style={styles.companyName}>{companyName}</Text>
             {props.order.status !== 'Filled' && (
               <Text style={styles.orderStatus}>Active</Text>
             )}

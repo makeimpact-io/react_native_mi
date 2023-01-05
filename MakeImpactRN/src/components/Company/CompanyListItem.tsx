@@ -14,6 +14,20 @@ export const CompanyListItem = (props: {
   match?: string;
   onClick: () => void;
 }) => {
+  const stockPrice =
+    props.company.tradingData &&
+    props.company.tradingData.priceLastClose !== '-'
+      ? props.company.tradingData.currency +
+        ' ' +
+        props.company.tradingData.priceLastClose
+      : 'N / A';
+  const companyName =
+    props.company.name.slice(
+      0,
+      props.company.name.length > 18 ? 18 : props.company.name.length,
+    ) + (props.company.name.length > 18 ? '...' : '');
+
+  const matchText = props.match + '% match';
   return (
     <TouchableOpacity style={styles.container} onPress={props.onClick}>
       <View style={styles.logoContainer}>
@@ -25,26 +39,14 @@ export const CompanyListItem = (props: {
         />
       </View>
       <View style={styles.detailsContainer}>
-        <Text style={styles.companyName}>
-          {props.company.name.slice(
-            0,
-            props.company.name.length > 18 ? 18 : props.company.name.length,
-          ) + (props.company.name.length > 18 ? '...' : '')}
-        </Text>
+        <Text style={styles.companyName}>{companyName}</Text>
         <Text style={styles.sectorName}>{props.sector.name}</Text>
-        <Text style={styles.stockPrice}>
-          {props.company.tradingData &&
-          props.company.tradingData.priceLastClose !== '-'
-            ? props.company.tradingData.currency +
-              ' ' +
-              props.company.tradingData.priceLastClose
-            : 'N / A'}
-        </Text>
+        <Text style={styles.stockPrice}>{stockPrice}</Text>
       </View>
       {props.match ? (
         <View style={styles.matchContainer}>
           <MatchChart match={parseInt(props.match, 10)} />
-          <Text style={styles.matchText}>{props.match + '% match'}</Text>
+          <Text style={styles.matchText}>{matchText}</Text>
         </View>
       ) : null}
     </TouchableOpacity>

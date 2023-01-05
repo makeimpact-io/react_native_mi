@@ -28,6 +28,7 @@ import {
 } from '../../../components';
 import SwipeButton from 'rn-swipe-button';
 import { RootStackNavigationParamList } from '../../../navigation/App/AppContent';
+import { LoadingScreen } from '../../Utils/LoadingScreen';
 
 type Props = NativeStackScreenProps<RootStackNavigationParamList, 'SellStock'>;
 
@@ -42,6 +43,8 @@ export const SellStocksScreen = (props: Props) => {
   const [orderIsConfirmed, setOrderIsConfirmed] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [successfulOrder, setSuccessfulOrder] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const renderSwipeButton = () => (
     <SwipeButton
@@ -97,6 +100,7 @@ export const SellStocksScreen = (props: Props) => {
   };
 
   const executeOrder = async () => {
+    setLoading(true);
     const data = await postAnOrder(
       accountID,
       company.conId,
@@ -108,11 +112,13 @@ export const SellStocksScreen = (props: Props) => {
     } else {
       setSuccessfulOrder(true);
     }
+    setLoading(false);
   };
 
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>
+        {loading && <LoadingScreen />}
         <ErrorModal
           errorMsg={'There has been an error, please try again later!'}
           hideModalText={'Try Again'}
@@ -132,7 +138,7 @@ export const SellStocksScreen = (props: Props) => {
         />
         <CompanyDetailsHeader company={company} sector={sector} />
         <View style={styles.buyStocksContainer}>
-          <Text style={styles.headingText}>Total stocks to buy</Text>
+          <Text style={styles.headingText}>Total stocks to sell</Text>
           {orderIsConfirmed ? (
             <Text style={styles.input}>{stocksToSell.toString()}</Text>
           ) : (

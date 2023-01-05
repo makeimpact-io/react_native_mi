@@ -7,6 +7,14 @@ export const CompanyDetailsHeader = (props: {
   company: Company;
   sector: Sector;
 }) => {
+  const stockPrice =
+    props.company.tradingData &&
+    props.company.tradingData.priceLastClose !== '-'
+      ? props.company.tradingData.currency +
+        ' ' +
+        props.company.tradingData.priceLastClose
+      : 'NaN';
+
   return (
     <View style={styles.companyDetails}>
       <View style={styles.logoContainer}>
@@ -18,19 +26,19 @@ export const CompanyDetailsHeader = (props: {
         />
       </View>
       <View style={styles.nameContainer}>
-        <Text style={styles.companyName}>{props.company.name}</Text>
+        <Text
+          style={
+            props.company.name.length > 8
+              ? [styles.companyName, styles.companyLongName]
+              : styles.companyName
+          }>
+          {props.company.name}
+        </Text>
         <Text style={styles.sectorName}>{props.sector.name}</Text>
       </View>
       <View style={styles.stockPriceContainer}>
-        <Text style={styles.stockPrice}>
-          {props.company.tradingData &&
-          props.company.tradingData.priceLastClose !== '-'
-            ? props.company.tradingData.currency +
-              ' ' +
-              props.company.tradingData.priceLastClose
-            : 'NaN'}
-        </Text>
-        <Text style={styles.growthPercent}>%/12M</Text>
+        <Text style={styles.stockPrice}>{stockPrice}</Text>
+        {/* <Text style={styles.growthPercent}>%/12M</Text> */}
       </View>
     </View>
   );
@@ -46,22 +54,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   logoContainer: {
-    width: 60,
-    height: 60,
+    width: '15%',
+    height: 50,
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
-    borderRadius: 30,
-    backgroundColor: White,
+    borderRadius: 25,
   },
   companyLogo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: White,
   },
   nameContainer: {
     height: '100%',
-    width: 200,
+    width: '60%',
     display: 'flex',
     paddingLeft: 20,
     justifyContent: 'flex-start',
@@ -69,10 +77,13 @@ const styles = StyleSheet.create({
   },
   companyName: {
     fontFamily: 'Inter',
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '600',
     color: White,
     opacity: 0.8,
+  },
+  companyLongName: {
+    fontSize: 16,
   },
   sectorName: {
     fontFamily: 'Inter',
@@ -83,7 +94,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingLeft: 15,
+    width: '35%',
   },
   stockPrice: {
     fontSize: 16,

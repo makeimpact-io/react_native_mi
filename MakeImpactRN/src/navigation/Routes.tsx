@@ -41,24 +41,25 @@ function Routes(props: Props) {
   }, [resetUserState, user?.uid]);
 
   useEffect(() => {
-    if (user !== null) {
-      if (
-        props.user.uid !== '' &&
-        props.user.firstName !== '' &&
-        props.user.lastName !== '' &&
-        props.user.goals !== null &&
-        props.user.goals.length >= 3 &&
-        props.user.invested !== null &&
-        props.user.gender !== null
-      ) {
-        setAuthenticating(false);
-        setInitializing(false);
-      } else {
+    if (user !== null && user !== undefined) {
+      if (props.user.uid !== '') {
+        if (
+          props.user.uid !== '' &&
+          props.user.firstName !== '' &&
+          props.user.lastName !== '' &&
+          props.user.goals !== null &&
+          props.user.goals.length >= 3 &&
+          props.user.invested !== null &&
+          props.user.gender !== null
+        ) {
+          setAuthenticating(false);
+          setInitializing(false);
+        } else {
+          setAuthenticating(true);
+          setInitializing(false);
+        }
       }
-    } else if (user !== null) {
-      setAuthenticating(false);
-      setInitializing(false);
-    } else {
+    } else if (user === null && user !== undefined) {
       setAuthenticating(true);
       setInitializing(false);
     }

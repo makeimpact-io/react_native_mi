@@ -9,3 +9,6 @@ export type { AcademyCategory } from './AcademyCategory';
 export type { AcademyArticle } from './AcademyArticle';
 export type { Text } from './Text';
 export type { ActiveOrder } from './ActiveOrder';
+
+export type { PortfolioData } from './InteractiveBrokersTypes/PortfolioData';
+export type { UserAccountDetails } from './InteractiveBrokersTypes/UserAccountDetails';

@@ -113,7 +113,7 @@ const CompanyStockDataScreen = (props: Props) => {
                     [
                       'Market value',
                       {
-                        text: marketValue,
+                        text: marketValue + ' ' + currency,
                       },
                     ],
                     [

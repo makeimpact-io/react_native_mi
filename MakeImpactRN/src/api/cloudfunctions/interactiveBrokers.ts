@@ -16,7 +16,7 @@ export async function fetchAccountDetails() {
       'https://us-central1-makeimpact-test.cloudfunctions.net/ibaccountDetailsPaper';
     const response = await fetch(endpoint);
     const data = await response.json();
-    return data;
+    return data[0];
   } catch (err) {
     console.log('Caught err' + err);
   }
@@ -117,7 +117,8 @@ export async function postAnOrder(
       body: body,
     };
     const response = await fetch(endpoint, options);
-    if (response.status === 500) {
+    if (response.status === 500 && response.statusText !== '') {
+      console.log(response);
       return 'Error';
     } else {
       const data = await response.json();

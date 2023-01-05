@@ -5,8 +5,12 @@ import {
   ScrollView,
   View,
   Pressable,
+  Text,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
+import {
+  AppBackgroundColors,
+  MainTextWhite,
+} from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
@@ -44,9 +48,7 @@ const CommitmentCompaniesScreen = (props: Props) => {
             props.sectors.filter(sector => sector.id === company.sectorId)[0]
           }
           onClick={() =>
-            props.navigation
-              .getParent()
-              ?.navigate('CompanyDetails', { company: company })
+            props.navigation.navigate('CompanyDetails', { company: company })
           }
         />
       </View>
@@ -75,7 +77,13 @@ const CommitmentCompaniesScreen = (props: Props) => {
               showModal={showModal}
             />
           </View>
-          <View style={styles.companiesContainer}>{companiesToRender}</View>
+          {commitmentCompanies.length !== 0 ? (
+            <View style={styles.companiesContainer}>{companiesToRender}</View>
+          ) : (
+            <Text style={styles.noCompaniesText}>
+              There are currently no companies belonging to this commitment.
+            </Text>
+          )}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -142,6 +150,13 @@ const styles = StyleSheet.create({
   },
   questionMarkContainer: {
     marginRight: 20,
+  },
+  noCompaniesText: {
+    fontSize: 15,
+    marginTop: 10,
+    marginHorizontal: 15,
+    textAlign: 'center',
+    color: MainTextWhite,
   },
 });
 

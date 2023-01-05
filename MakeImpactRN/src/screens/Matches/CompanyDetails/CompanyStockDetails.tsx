@@ -2,30 +2,35 @@ import * as React from 'react';
 import {
   StyleSheet,
   SafeAreaView,
-  Text,
   View,
   ScrollView,
   Linking,
+  Text,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
+import {
+  AppBackgroundColors,
+  MainTextWhite,
+} from '../../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
-import { AppState } from '../../state/store';
-import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { AppState } from '../../../state/store';
+
 import { useEffect, useState } from 'react';
-import { getStocksData } from '../../api/firebase/data';
+import { getStocksData } from '../../../api/firebase/data';
 import {
   CompanyDataTable,
   SectorHeader,
   StocksChart,
   CompanyDetailsHeader,
-} from '../../components';
-import { RootStackNavigationParamList } from '../../navigation/App/AppContent';
+} from '../../../components';
+import PartnerIcon from '../../../assets/icons/Utils/PartnerIcon';
+import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
+import { CompanyDetailsNavigationParamList } from '../../../navigation/App/SubNavigations/CompanyDetailsNavigation';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  NativeStackScreenProps<RootStackNavigationParamList, 'CompanyDetails'>;
+  MaterialTopTabScreenProps<CompanyDetailsNavigationParamList, 'Stocks'>;
 
-const CompanyDetails = (props: Props) => {
+const CompanyStockDetails = (props: Props) => {
   const company = props.route.params.company;
   const sector = props.sectors.find(s => s.id === company?.sectorId);
   const [stockData, setStockData] = useState<Map<string, string>>(
@@ -55,25 +60,11 @@ const CompanyDetails = (props: Props) => {
     return (
       <LinearGradient colors={AppBackgroundColors} style={styles.background}>
         <SafeAreaView style={styles.container}>
+          <CompanyDetailsHeader company={company} sector={sector} />
+          <View style={styles.bufferZone} />
           <ScrollView
             style={styles.scrollContainer}
             showsVerticalScrollIndicator={false}>
-            <CompanyDetailsHeader company={company} sector={sector} />
-            {/* {showBuyButton && (
-              <View style={styles.tradingButton}>
-                <DefaultButton
-                  content={'Invest'}
-                  backgroundColor={MIPink}
-                  textColor={Black}
-                  action={() =>
-                    props.navigation.navigate('BuyStock', {
-                      company: company,
-                      sector: sector,
-                    })
-                  }
-                />
-              </View>
-            )} */}
             <View style={styles.chartContainer}>
               {chartLoading ? (
                 <Text>Loading...</Text>
@@ -153,6 +144,12 @@ const CompanyDetails = (props: Props) => {
                 }
               />
             </View>
+            <View style={styles.partnerContainer}>
+              <Text style={styles.partnerText}>
+                Financial data provided by our partner
+              </Text>
+              <PartnerIcon />
+            </View>
           </ScrollView>
         </SafeAreaView>
       </LinearGradient>
@@ -169,16 +166,19 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = {};
 
-const CompanyDetailsConnected = connect(
+const CompanyStockDetailsConnected = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(CompanyDetails);
+)(CompanyStockDetails);
 
 const styles = StyleSheet.create({
   background: {
     flex: 1,
     display: 'flex',
     alignItems: 'center',
+  },
+  bufferZone: {
+    height: 40,
   },
   container: {
     flex: 1,
@@ -209,6 +209,18 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginBottom: 20,
   },
+  partnerContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  partnerText: {
+    color: MainTextWhite,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 20,
+  },
 });
 
-export { CompanyDetailsConnected as CompanyDetails };
+export { CompanyStockDetailsConnected as CompanyStockDetails };

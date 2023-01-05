@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    paddingTop: 80,
   },
   container: {
     flex: 1,
@@ -93,6 +92,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 30,
   },
 });
 

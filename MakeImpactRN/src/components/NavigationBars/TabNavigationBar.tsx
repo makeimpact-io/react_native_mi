@@ -7,9 +7,16 @@ import {
   White,
 } from '../../assets/styles/RegularTheme';
 
-export const TabNavigationBar = (props: MaterialTopTabBarProps) => {
+export const TabNavigationBar = (
+  props: MaterialTopTabBarProps & { isOnCompanyDetails?: boolean },
+) => {
   return (
-    <View style={styles.container}>
+    <View
+      style={
+        props.isOnCompanyDetails
+          ? [styles.container, styles.companyDetailsContainer]
+          : styles.container
+      }>
       <View style={styles.tabsContainer}>
         {props.state.routes.map((route, index) => {
           const { options } = props.descriptors[route.key];
@@ -82,6 +89,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     zIndex: 1,
+  },
+  companyDetailsContainer: {
+    top: 70,
   },
   tabsContainer: {
     display: 'flex',

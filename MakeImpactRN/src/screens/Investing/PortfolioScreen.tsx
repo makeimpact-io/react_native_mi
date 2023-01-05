@@ -7,7 +7,10 @@ import {
   RefreshControl,
   Text,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
+import {
+  AppBackgroundColors,
+  MainTextWhite,
+} from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   AcademyHeadline,
@@ -22,8 +25,13 @@ import {
 } from '../../api/cloudfunctions/interactiveBrokers';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { resolvePortfolioData } from './helpers/PortfolioHelper';
-import { Company, Sector } from '../../types';
+import { resolvePortfolioData } from './helpers/portfolioHelper';
+import {
+  Company,
+  PortfolioData,
+  Sector,
+  UserAccountDetails,
+} from '../../types';
 import { LoadingScreen } from '../Utils/LoadingScreen';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { InvestsNavigationParamList } from '../../navigation/App/SubNavigations/InvestNavigation';
@@ -31,22 +39,38 @@ import { InvestsNavigationParamList } from '../../navigation/App/SubNavigations/
 type Props = ReturnType<typeof mapStateToProps> &
   MaterialTopTabScreenProps<InvestsNavigationParamList, 'Portfolio'>;
 
-interface UserStockData {
+export interface UserStockData {
   company: Company | undefined;
   sector: Sector | undefined;
-  stocks: Number;
-  price: string;
-  singlePrice: string;
-  totalReturn: string;
+  stocks: number;
+  currentMarketPrice: number;
+  averageBoughtPrice: number;
+  totalReturn: number;
   currency: string;
-  positionChange: string;
+  positionChange: number;
   isProfitable: boolean;
 }
 
+export interface ResolvedPortfolioData {
+  userStockData: UserStockData[];
+  stocksMarketValue: number[];
+  stocksLabels: string[];
+  totalMarketValue: number;
+  unrealizedPNL: number;
+  calculatePNLPCT: number;
+}
+
+const fractionNumber = new Intl.NumberFormat('de-DE', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 const PortfolioScreen = (props: Props) => {
-  const [portfolioData, setPortfolioData] = useState();
-  const [userBalance, setUserBalance] = useState();
-  const [userAccountDetails, setUserAccountDetails] = useState();
+  const [portfolioData, setPortfolioData] = useState<PortfolioData[]>();
+  const [userBalance, setUserBalance] = useState<number>(0);
+  const [userAccountDetails, setUserAccountDetails] =
+    useState<UserAccountDetails>();
+  const [currencySymbol, setCurrencySymbol] = useState('');
 
   const [chartToShow, setChartToShow] = useState(<LoadingScreen />);
   const [portfolioCompanies, setPortfolioCompanies] = useState([
@@ -77,43 +101,79 @@ const PortfolioScreen = (props: Props) => {
         props.companies,
         props.sectors,
       );
-      let data = [];
-      for (let i = 0; i < resolvedData[1].length; i++) {
-        const assetAmount = resolvedData[1][i];
-        const label = resolvedData[2][i];
-        data.push({ y: assetAmount, x: label });
+
+      const preparePieChartData = (
+        marketValues: number[],
+        labels: string[],
+        totalValue: number,
+        positionChange: number,
+        positionChangePercentage: number,
+        isProfit: boolean,
+      ) => {
+        let pieChartData = [];
+        for (let i = 0; i < marketValues.length; i++) {
+          const assetAmount = marketValues[i];
+          const label = labels[i];
+          pieChartData.push({ y: assetAmount.toFixed(2), x: label });
+        }
+        setChartToShow(
+          <PortfolioPieChart
+            totalValue={totalValue.toLocaleString('de-DE').split(',')[0]}
+            positionChange={
+              positionChange.toLocaleString('de-DE').split(',')[0]
+            }
+            positionChangePercentage={positionChangePercentage.toFixed(2) + '%'}
+            isProfit={isProfit}
+            data={pieChartData}
+            currencySymbol={currencySymbol}
+          />,
+        );
+      };
+
+      preparePieChartData(
+        resolvedData.stocksMarketValue,
+        resolvedData.stocksLabels,
+        resolvedData.totalMarketValue,
+        resolvedData.unrealizedPNL,
+        resolvedData.calculatePNLPCT,
+        resolvedData.unrealizedPNL > 0,
+      );
+      setCurrencySymbol(userAccountDetails.currency);
+
+      if (userAccountDetails.currency === 'EUR') {
+        setCurrencySymbol('€');
+      } else if (userAccountDetails.currency === 'USD') {
+        setCurrencySymbol('$');
+      } else if (userAccountDetails.currency === 'GBP') {
+        setCurrencySymbol('£');
       }
-      let currencySymbol = userAccountDetails.map(details => details.currency);
-      if (userAccountDetails.map(details => details.currency) == 'EUR') {
-        currencySymbol = '€';
-      } else if (userAccountDetails.map(details => details.currency) == 'USD') {
-        currencySymbol = '$';
-      } else if (userAccountDetails.map(details => details.currency) == 'GBP') {
-        currencySymbol = '£';
-      }
-      const userStockData = resolvedData[0] as UserStockData[];
-      let portfolioCompaniesData = [];
+      const userStockData = resolvedData.userStockData;
+      let portfolioCompaniesRender = [];
       for (let i = 0; i < userStockData.length; i++) {
         const data = userStockData[i];
         if (data.company && data.sector) {
-          portfolioCompaniesData.push(
+          portfolioCompaniesRender.push(
             <View style={styles.companyStockContainer} key={data.company.id}>
               <CompanyStockItem
                 company={data.company}
                 sector={data.sector}
                 stocks={data.stocks}
-                price={data.price}
+                price={fractionNumber.format(data.totalReturn)}
                 positionChange={data.positionChange}
                 isProfitable={data.isProfitable}
+                currency={data.currency}
                 onClick={() =>
                   props.navigation.getParent()?.navigate('CompanyPositions', {
                     company: data.company,
                     stocks: data.stocks,
-                    marketValue: data.price,
-                    positionChange: data.positionChange,
-                    singleStockPrice: data.singlePrice,
+                    marketValue: fractionNumber.format(data.totalReturn),
+                    positionChange: data.positionChange.toFixed(2) + '%',
+                    singleStockPrice: data.averageBoughtPrice.toFixed(2),
                     currency: currencySymbol,
-                    totalReturn: data.totalReturn,
+                    totalReturn: (
+                      (data.currentMarketPrice - data.averageBoughtPrice) *
+                      data.stocks
+                    ).toFixed(2),
                   })
                 }
               />
@@ -122,19 +182,10 @@ const PortfolioScreen = (props: Props) => {
         }
       }
 
-      setPortfolioCompanies(portfolioCompaniesData);
-      setChartToShow(
-        <PortfolioPieChart
-          totalValue={resolvedData[3].toLocaleString('de-DE').split(',')[0]}
-          positionChange={resolvedData[4].toLocaleString('de-DE').split(',')[0]}
-          positionChangePercentage={resolvedData[5] + '%'}
-          isProfit={resolvedData[4] > 0}
-          data={data}
-          currencySymbol={currencySymbol}
-        />,
-      );
+      setPortfolioCompanies(portfolioCompaniesRender);
     }
   }, [
+    currencySymbol,
     portfolioData,
     props.companies,
     props.navigation,
@@ -150,11 +201,15 @@ const PortfolioScreen = (props: Props) => {
           onScrollToTop={loadData}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
-          <View style={styles.balanceContainer}>{chartToShow}</View>
-          <View>
-            <Text>{userBalance}</Text>
-            <Text>Available Cash</Text>
+          }
+          showsVerticalScrollIndicator={false}>
+          <View>{chartToShow}</View>
+          <View style={styles.balanceContainer}>
+            <Text style={styles.balance}>
+              {userBalance.toLocaleString('de-DE').split(',')[0] +
+                currencySymbol}
+            </Text>
+            <Text style={styles.balanceText}>Available Cash</Text>
           </View>
           <AcademyHeadline text={'My Portfolio'} style={styles.portfolioText} />
           {portfolioCompanies}
@@ -193,7 +248,21 @@ const styles = StyleSheet.create({
   scroll: {
     width: '100%',
   },
-  balanceContainer: {},
+  balanceContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  balance: {
+    color: MainTextWhite,
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'Inter',
+  },
+  balanceText: {
+    color: MainTextWhite,
+    fontSize: 14,
+    fontFamily: 'Inter',
+  },
   portfolioText: {
     width: '100%',
     textAlign: 'left',

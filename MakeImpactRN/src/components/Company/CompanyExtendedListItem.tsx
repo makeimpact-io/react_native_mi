@@ -13,6 +13,11 @@ export const CompanyExtendedListItem = (props: {
   sector: Sector;
   onClick: () => void;
 }) => {
+  const stockPrice =
+    props.company.tradingData?.priceLastClose +
+    ' ' +
+    props.company.tradingData?.currency;
+
   return (
     <TouchableOpacity style={styles.container} onPress={props.onClick}>
       <View style={styles.imageContainer}>
@@ -33,11 +38,7 @@ export const CompanyExtendedListItem = (props: {
       <View style={styles.infoContainer}>
         <View style={styles.detailsContainer}>
           <Text style={styles.companyName}>{props.company.name}</Text>
-          <Text style={styles.stockPrice}>
-            {props.company.tradingData?.priceLastClose +
-              ' ' +
-              props.company.tradingData?.currency}
-          </Text>
+          <Text style={styles.stockPrice}>{stockPrice}</Text>
         </View>
       </View>
     </TouchableOpacity>

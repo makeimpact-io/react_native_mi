@@ -61,11 +61,11 @@ function AuthContent(props: Props) {
   }, [props.user]);
 
   const onboardingHeader = (navigation: NativeStackHeaderProps) => {
-    const index = navigation.options.title;
+    const index = navigation.options.headerTitle;
     return (
       <OnboardingNavigationBar
         navigation={navigation}
-        index={index ? parseInt(index, 10) : 0}
+        index={index ? parseInt(index.toString(), 10) : 0}
         length={4}
       />
     );
@@ -81,7 +81,7 @@ function AuthContent(props: Props) {
             animation: 'slide_from_right',
             animationDuration: 1.2,
             header: onboardingHeader,
-            headerTitle: '1',
+            headerTitle: '0',
           }}
         />
         <AuthorizedStack.Screen
@@ -92,7 +92,7 @@ function AuthContent(props: Props) {
             animation: 'slide_from_right',
             animationDuration: 1.2,
             header: onboardingHeader,
-            headerTitle: '2',
+            headerTitle: '1',
           }}
         />
         <AuthorizedStack.Screen
@@ -103,7 +103,7 @@ function AuthContent(props: Props) {
             animation: 'slide_from_right',
             animationDuration: 1.2,
             header: onboardingHeader,
-            headerTitle: '3',
+            headerTitle: '2',
           }}
         />
         <AuthorizedStack.Screen
@@ -114,7 +114,7 @@ function AuthContent(props: Props) {
             animation: 'slide_from_right',
             animationDuration: 1.2,
             header: onboardingHeader,
-            headerTitle: '4',
+            headerTitle: '3',
           }}
         />
       </AuthorizedStack.Navigator>

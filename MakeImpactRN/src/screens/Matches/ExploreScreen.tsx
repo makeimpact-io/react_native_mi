@@ -31,6 +31,11 @@ import {
 } from '../../assets/styles/RegularTheme';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { MatchesNavigationParamList } from '../../navigation/App/SubNavigations/MatchesNavigation';
+import {
+  getImpactChampions,
+  getScienceBasedCompanies,
+  getTop100Companies,
+} from './helpers/exploreHelper';
 
 type Props = ReturnType<typeof mapStateToProps> &
   MaterialTopTabScreenProps<MatchesNavigationParamList, 'Explore'>;
@@ -48,37 +53,11 @@ const ExploreScreen = (props: Props) => {
   ];
 
   useEffect(() => {
-    setImpactChampions(
-      props.companies
-        .filter(
-          company => company.commitments.length >= 5 && company.sdgs.length > 6,
-        )
-        .sort(a => a.commitments.length)
-        .slice(0, 5),
-    );
-    setTop100Companies(
-      props.companies
-        .filter(company => company.rank)
-        .sort((a, b) => {
-          if (a.rank === undefined && b.rank === undefined) {
-            return 0;
-          } else if (a.rank === undefined) {
-            return 1;
-          } else if (b.rank === undefined) {
-            return -1;
-          } else {
-            return a.rank - b.rank;
-          }
-        })
-        .slice(0, 10),
-    );
-    setScienceBasedCompanies(
-      props.companies
-        .filter(company => company.commitments.includes('2'))
-        .sort(a => a.commitments.length)
-        .slice(0, 10),
-    );
+    setImpactChampions(getImpactChampions(props.companies));
+    setTop100Companies(getTop100Companies(props.companies));
+    setScienceBasedCompanies(getScienceBasedCompanies(props.companies));
   }, [props.companies]);
+
   const impactChampionsRendered = impactChampions.map(company => {
     return (
       <View style={styles.horizontalScrollItem} key={company.id}>
@@ -148,6 +127,7 @@ const ExploreScreen = (props: Props) => {
       </View>
     );
   });
+
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>

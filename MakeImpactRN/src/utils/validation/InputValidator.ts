@@ -9,19 +9,16 @@ export const validatePassword = (requestedPassword: string) => {
 };
 
 export const validateEmail = (requestedEmail: string) => {
-  if (requestedEmail === '') {
-    return false;
-  } else if (requestedEmail.length <= 6) {
-    return false;
-  } else {
+  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(requestedEmail)) {
     return true;
   }
+  return false;
 };
 
 export const validateName = (requestedName: string) => {
   if (requestedName === '') {
     return false;
-  } else if (requestedName.length <= 3) {
+  } else if (requestedName.length < 3) {
     return false;
   } else {
     return true;

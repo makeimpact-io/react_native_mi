@@ -16,6 +16,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 const UserGoalsScreen = (props: Props) => {
   const [userGoals, setUserGoals] = useState<string[]>(props.userGoals);
+
   const toggleGoal = (id: string) => {
     if (userGoals.includes(id) && userGoals.length > 3) {
       setUserGoals(userGoals.filter(g => g !== id));
@@ -52,7 +53,7 @@ const UserGoalsScreen = (props: Props) => {
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.scroll}>
+        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
           <AcademyHeadline text={'My Values'} />
           <View style={styles.goalsContainer}>
             {goals.map(a => a.component)}
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
   scroll: {
     width: '100%',
   },
-  goal: { padding: 5 },
+  goal: { padding: '1%' },
   goalsContainer: {
     display: 'flex',
     flexDirection: 'row',

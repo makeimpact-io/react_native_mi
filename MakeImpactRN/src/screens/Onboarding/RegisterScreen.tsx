@@ -42,8 +42,10 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     if (
-      (validateEmail(email) || email !== '') &&
-      (validatePassword(password) || password !== '') &&
+      validateEmail(email) &&
+      email !== '' &&
+      validatePassword(password) &&
+      password !== '' &&
       validatePassword(repeatPassword) &&
       repeatPassword !== '' &&
       password === repeatPassword &&
@@ -98,10 +100,9 @@ const RegisterScreen = () => {
             value={repeatPassword}
             onChangeText={(text: string) => setRepeatPassword(text)}
             error={
-              !(
-                validatePassword(repeatPassword) ||
-                (repeatPassword === '' && password === repeatPassword)
-              )
+              !validatePassword(repeatPassword) ||
+              repeatPassword === '' ||
+              password !== repeatPassword
             }
             isPassword={true}
             errorText={'Password is not the same!'}

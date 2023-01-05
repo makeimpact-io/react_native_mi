@@ -114,9 +114,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     display: 'flex',
   },
-  sdg: {
-    padding: 5,
-  },
+  sdg: { padding: '1%' },
   sdgsContainer: {
     display: 'flex',
     flexDirection: 'row',

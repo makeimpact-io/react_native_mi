@@ -5,8 +5,8 @@ import {
 } from '@react-navigation/material-top-tabs';
 import { TabNavigationBar } from '../../../components';
 import { PortfolioScreen } from '../../../screens/Investing/PortfolioScreen';
-import { ExploreScreen } from '../../../screens/Matches/ExploreScreen';
 import OrdersNavigation from './OrdersNavigation';
+import { InvestingExploreScreen } from '../../../screens/Investing/Explore/InvestingExploreScreen';
 
 export type InvestsNavigationParamList = {
   Portfolio: undefined;
@@ -34,7 +34,7 @@ function InvestNavigation() {
       <Tab.Screen name="Portfolio" component={PortfolioScreen} />
       <Tab.Screen
         name="ExploreStocks"
-        component={ExploreScreen}
+        component={InvestingExploreScreen}
         options={{ tabBarLabel: 'Explore' }}
       />
       <Tab.Screen

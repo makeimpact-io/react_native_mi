@@ -42,3 +42,9 @@ export { FiltersModal } from './Modals/FiltersModal';
 export { SuccessfulOrderModal } from './Modals/SuccessfulOrderModal';
 
 export { CompanyDetailsHeader } from './CompanyDetailsHeader/CompanyDetailsHeader';
+
+export { CommitmentCard } from './ImpactMarkers/CommitmentCard';
+export { SDGCard } from './ImpactMarkers/SDGCard';
+export { SASBCard } from './ImpactMarkers/SASBCard';
+
+export { DisclaimerAccordion } from './DisclaimerAccordion/DisclaimerAccordion';

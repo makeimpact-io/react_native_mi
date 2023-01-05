@@ -25,6 +25,7 @@ import FiltersIcon from '../../assets/icons/Utils/FiltersIcon';
 import { FilterButton } from '../../components/Button/FilterButton/FilterButton';
 import { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 import { MatchesNavigationParamList } from '../../navigation/App/SubNavigations/MatchesNavigation';
+import { filterCompanies, sortCompanies } from './helpers/searchHelper';
 
 type Props = ReturnType<typeof mapStateToProps> &
   MaterialTopTabScreenProps<MatchesNavigationParamList, 'MatchesSearch'>;
@@ -43,128 +44,16 @@ const MatchesSearchScreen = (props: Props) => {
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    let initialCompanies = props.companies.filter(a => a.name);
-
-    const sortedFilters = filters
-      .filter(a => a.category)
-      .sort((a, b) => {
-        const nameA = a.category.toUpperCase();
-        const nameB = b.category.toUpperCase();
-        if (nameA < nameB) {
-          return 1;
-        }
-        if (nameA > nameB) {
-          return -1;
-        }
-        return 0;
-      });
-    let previousFilter = '';
-    let previousList: Company[] = [];
-    for (let i = 0; i < sortedFilters.length; i++) {
-      const filter = sortedFilters[i];
-      switch (filter.category) {
-        case 'commitment':
-          if (previousFilter !== 'commitment') {
-            previousList = initialCompanies.filter(a => a.name);
-            initialCompanies = initialCompanies.filter(a =>
-              a.commitments.includes(filter.filter),
-            );
-            previousFilter = filter.category;
-          } else {
-            initialCompanies = initialCompanies.concat(
-              previousList.filter(a => a.commitments.includes(filter.filter)),
-            );
-          }
-          break;
-        case 'sector':
-          if (previousFilter !== 'sector') {
-            previousList = initialCompanies.filter(a => a.name);
-            initialCompanies = initialCompanies.filter(
-              a => a.sectorId === filter.filter,
-            );
-            previousFilter = filter.category;
-          } else {
-            initialCompanies = initialCompanies.concat(
-              previousList.filter(a => a.sectorId === filter.filter),
-            );
-          }
-          break;
-        case 'gaol':
-          if (previousFilter !== 'goal') {
-            previousList = initialCompanies.filter(a => a.name);
-            initialCompanies = initialCompanies.filter(a =>
-              a.sdgs.includes(filter.filter),
-            );
-            previousFilter = filter.category;
-          } else {
-            initialCompanies = initialCompanies.concat(
-              previousList.filter(a => a.sdgs.includes(filter.filter)),
-            );
-          }
-          break;
-      }
-    }
-    switch (sortBy) {
-      case 'match':
-        setFilteredCompanies(
-          initialCompanies.sort((a, b) => b.match - a.match),
-        );
-        break;
-      case 'matchDsc':
-        setFilteredCompanies(
-          initialCompanies.sort((a, b) => a.match - b.match),
-        );
-        break;
-      case 'name':
-        setFilteredCompanies(
-          initialCompanies.sort((a, b) => {
-            const nameA = a.name.toUpperCase();
-            const nameB = b.name.toUpperCase();
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
-            return 0;
-          }),
-        );
-        break;
-      case 'nameDsc':
-        setFilteredCompanies(
-          initialCompanies.sort((a, b) => {
-            const nameA = a.name.toUpperCase();
-            const nameB = b.name.toUpperCase();
-            if (nameA < nameB) {
-              return 1;
-            }
-            if (nameA > nameB) {
-              return -1;
-            }
-            return 0;
-          }),
-        );
-        break;
-      case 'size':
-        setFilteredCompanies(
-          initialCompanies.sort((a, b) => b.employees - a.employees),
-        );
-        break;
-      case 'sizeDsc':
-        setFilteredCompanies(
-          initialCompanies.sort((a, b) => a.employees - b.employees),
-        );
-        break;
-      default:
-        setFilteredCompanies(initialCompanies);
-        break;
-    }
+    let companies = filterCompanies(filters, props.companies);
+    setFilteredCompanies(sortCompanies(companies, sortBy));
   }, [filters, props.companies, sortBy]);
 
   useEffect(() => {
-    let initialCompanies = filteredCompanies;
-    initialCompanies.filter(c => c.name.includes(searchInput));
-    setCompaniesResult(new Set(initialCompanies));
+    let companies = filteredCompanies.concat();
+    const searchResult = companies.filter(c =>
+      c.name.toLowerCase().includes(searchInput.toLowerCase()),
+    );
+    setCompaniesResult(new Set(searchResult));
   }, [filteredCompanies, filters, props.companies, searchInput]);
 
   useEffect(() => {
@@ -286,7 +175,9 @@ const MatchesSearchScreen = (props: Props) => {
             style={styles.filterButtonContainer}>
             <FiltersIcon color={MainTextWhite} />
           </TouchableNativeFeedback>
-          <ScrollView horizontal={true}>{renderedFilters}</ScrollView>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {renderedFilters}
+          </ScrollView>
         </View>
         <View style={styles.matchesHeaderContainer}>
           <SecondaryHeader text={'Results'} />

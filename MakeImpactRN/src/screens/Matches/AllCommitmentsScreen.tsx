@@ -24,7 +24,7 @@ const AllCommitmentsScreen = (props: Props) => {
     return (
       <TouchableNativeFeedback
         onPress={() =>
-          props.navigation.getParent()?.navigate('CommitmentCompanies', {
+          props.navigation.navigate('CommitmentCompanies', {
             commitment: commitment,
           })
         }
