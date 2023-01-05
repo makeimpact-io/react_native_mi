@@ -12,6 +12,7 @@ import {
   assignTradingDataToCompanies,
   receiveAcademyCategories,
   receiveAcademyArticles,
+  receiveTexts,
 } from '../../state/data/dataSlice';
 import store from '../../state/store';
 import {
@@ -22,50 +23,80 @@ import {
   SASB,
   SDG,
   Sector,
+  Text,
   TradingData,
 } from '../../types';
 
+function onError(error: Error) {
+  console.error(error);
+}
+
 export const initiateRealtimeData = async () => {
-  firestore().collection('sdgs').onSnapshot(onSDGResult, onError);
+  firestore()
+    .collection('sdgs')
+    .onSnapshot(
+      (Snapshot: FirebaseFirestoreTypes.QuerySnapshot) =>
+        onResult<SDG>(Snapshot, receiveSDGs),
+      onError,
+    );
   firestore().collection('companies').onSnapshot(onCompanyResult, onError);
-  firestore().collection('commitments').onSnapshot(onCommitmentResult, onError);
-  firestore().collection('sasbs').onSnapshot(onSASBResult, onError);
-  firestore().collection('sectors').onSnapshot(onSectorResult, onError);
+  firestore()
+    .collection('commitments')
+    .onSnapshot(
+      (Snapshot: FirebaseFirestoreTypes.QuerySnapshot) =>
+        onResult<Commitment>(Snapshot, receiveCommitments),
+      onError,
+    );
+  firestore()
+    .collection('sasbs')
+    .onSnapshot(
+      (Snapshot: FirebaseFirestoreTypes.QuerySnapshot) =>
+        onResult<SASB>(Snapshot, receiveSASBs),
+      onError,
+    );
+  firestore()
+    .collection('sectors')
+    .onSnapshot(
+      (Snapshot: FirebaseFirestoreTypes.QuerySnapshot) =>
+        onResult<Sector>(Snapshot, receiveSectors),
+      onError,
+    );
+  firestore()
+    .collection('texts')
+    .onSnapshot(
+      (Snapshot: FirebaseFirestoreTypes.QuerySnapshot) =>
+        onResult<Text>(Snapshot, receiveTexts),
+      onError,
+    );
   firestore()
     .collection('academyArticles')
-    .onSnapshot(onAcademyArticleDataResult, onError);
+    .onSnapshot(
+      (Snapshot: FirebaseFirestoreTypes.QuerySnapshot) =>
+        onResult<AcademyArticle>(Snapshot, receiveAcademyArticles),
+      onError,
+    );
   firestore()
     .collection('academyCategories')
-    .onSnapshot(onAcademyCategoryDataResult, onError);
+    .onSnapshot(
+      (Snapshot: FirebaseFirestoreTypes.QuerySnapshot) =>
+        onResult<AcademyCategory>(Snapshot, receiveAcademyCategories),
+      onError,
+    );
   firestore()
     .collection('tradingData')
     .onSnapshot(onTradingDataResult, onError);
-
-  function onError(error: Error) {
-    console.error(error);
-  }
 };
 
-function onSDGResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
-  let sdgs = [] as SDG[];
-  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
-    const sdg = QuerySnapshot.docs[i].data();
-    sdgs.push(sdg as unknown as SDG);
-  }
-  sdgs.sort(sdg => parseInt(sdg.id, 10));
-  store.dispatch(receiveSDGs(sdgs));
-}
-
-function onCommitmentResult(
+function onResult<T>(
   QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot,
+  action: (data: T[]) => any,
 ) {
-  let commitments = [] as Commitment[];
+  let data = [] as T[];
   for (let i = 0; i < QuerySnapshot.docs.length; i++) {
-    const commitment = QuerySnapshot.docs[i].data();
-    commitments.push(commitment as unknown as Commitment);
+    const singleData = QuerySnapshot.docs[i].data();
+    data.push(singleData as T);
   }
-  commitments.sort(commitment => parseInt(commitment.id, 10));
-  store.dispatch(receiveCommitments(commitments));
+  store.dispatch(action(data));
 }
 
 function onCompanyResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
@@ -88,26 +119,6 @@ function onCompanyResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
   }
 }
 
-function onSASBResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
-  let sasbs = [] as SASB[];
-  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
-    const sasb = QuerySnapshot.docs[i].data();
-    sasbs.push(sasb as unknown as SASB);
-  }
-  sasbs.sort(sasb => parseInt(sasb.id, 10));
-  store.dispatch(receiveSASBs(sasbs));
-}
-
-function onSectorResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
-  let sectors = [] as Sector[];
-  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
-    const sector = QuerySnapshot.docs[i].data();
-    sectors.push(sector as unknown as Sector);
-  }
-  sectors.sort(sector => parseInt(sector.id, 10));
-  store.dispatch(receiveSectors(sectors));
-}
-
 function onTradingDataResult(
   QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot,
 ) {
@@ -118,28 +129,6 @@ function onTradingDataResult(
   }
   store.dispatch(receiveTradingData(tradingDatas));
   store.dispatch(assignTradingDataToCompanies());
-}
-
-function onAcademyCategoryDataResult(
-  QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot,
-) {
-  let categories = [] as AcademyCategory[];
-  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
-    const sector = QuerySnapshot.docs[i].data();
-    categories.push(sector as unknown as Sector);
-  }
-  store.dispatch(receiveAcademyCategories(categories));
-}
-
-function onAcademyArticleDataResult(
-  QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot,
-) {
-  let articles = [] as AcademyArticle[];
-  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
-    const article = QuerySnapshot.docs[i].data();
-    articles.push(article as unknown as AcademyArticle);
-  }
-  store.dispatch(receiveAcademyArticles(articles));
 }
 
 export async function getStocksData(isin: string) {

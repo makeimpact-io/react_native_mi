@@ -7,19 +7,17 @@ import {
   Image,
   TouchableNativeFeedback,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
+import { AppBackgroundColors } from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { AcademyHeadline } from '../../components';
 import PinkWaveHeader from '../../assets/icons/PinkWaves/PinkWaveHeader';
+import { RootStackNavigationParamList } from '../../navigation/App/AppContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<RootStackNavigationParamList, 'Sectors'>;
 
 const AllSectorsScreen = (props: Props) => {
   const renderedSectors = props.sectors.map(sector => {
@@ -39,6 +37,7 @@ const AllSectorsScreen = (props: Props) => {
       <SafeAreaView style={styles.container}>
         <ScrollView
           showsVerticalScrollIndicator={false}
+          style={styles.scroll}
           contentContainerStyle={styles.scrollContainer}>
           <PinkWaveHeader style={styles.pinkWave} />
           <View style={styles.headerContainer}>
@@ -67,7 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    paddingTop: 30,
   },
   container: {
     flex: 1,
@@ -87,6 +85,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   pinkWave: {
+    width: '100%',
     marginTop: -30,
   },
   header: {
@@ -104,8 +103,18 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignSelf: 'center',
+    justifyContent: 'center',
     paddingVertical: 10,
-    width: '87.5%',
+    flex: 1,
+  },
+  scroll: {
+    width: '100%',
+    height: '100%',
+  },
+  scrollContentContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MainText, MainTextWhite } from '../../../assets/styles';
+import { MainText, MainTextWhite } from '../../../assets/styles/RegularTheme';
 
 export const MenuNavigationButton = (props: {
   links: { text: string; icon?: any; onClick: () => void }[];

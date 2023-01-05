@@ -1,26 +1,26 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { OnboardingBackgroundColors } from '../../assets/styles';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
+import { OnboardingBackgroundColors } from '../../assets/styles/RegularTheme';
 
 import LinearGradient from 'react-native-linear-gradient';
-import { Header } from '../../components/Text/Header';
-import { SecondaryText } from '../../components/Text/SecondaryText';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { OnboardingBottomNavigation } from '../../components/NavigationBars/OnboardingBottomNavigation';
+import {
+  Header,
+  SecondaryText,
+  OnboardingBottomNavigation,
+  InputField,
+} from '../../components/';
+
 import { connect } from 'react-redux';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { updateNames } from '../../api/firebase/user';
 import { setRegistering } from '../../state/app/appSlice';
 import { useState } from 'react';
 import { AppState } from '../../state/store';
-import { InputField } from '../../components';
 import { validateName } from '../../utils/validation/InputValidator';
+import { AuthorizedStackParamList } from '../../navigation/AuthContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<AuthorizedStackParamList, 'Names'>;
 
 const NamesScreen = (props: Props) => {
   const [firstName, setFirstName] = useState<string>(props.firstName);
@@ -38,20 +38,19 @@ const NamesScreen = (props: Props) => {
             value={firstName}
             onChangeText={text => setFirstName(text)}
             error={!(validateName(firstName) && firstName !== '')}
-            errorText={'Opas'}
+            errorText={'Invalid Name!'}
           />
           <InputField
             placeholder={'Last Name'}
             value={lastName}
             onChangeText={text => setLastName(text)}
             error={!(validateName(lastName) && lastName !== '')}
-            errorText={'Opas'}
+            errorText={'Invalid Name!'}
           />
         </View>
       </SafeAreaView>
       <OnboardingBottomNavigation
-        navigation={props.navigation}
-        nextPage={props.route.params.nextScreen}
+        goNextPage={() => props.navigation.navigate('Gender')}
         disabled={
           firstName === '' ||
           lastName === '' ||

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { MIPink, TertiaryText } from '../../styles';
+import { MIPink, TertiaryText } from '../../styles/RegularTheme';
 
 function AcademyIcon(props: { focused: boolean | undefined }) {
   return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
-import { MIGreen, White } from '../../assets/styles';
+import { MIGreen, White } from '../../assets/styles/RegularTheme';
 
 const chartConfig = {
   backgroundGradientFromOpacity: 0,

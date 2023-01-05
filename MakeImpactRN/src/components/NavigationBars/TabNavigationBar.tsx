@@ -1,48 +1,84 @@
-import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
-import { NativeStackHeaderProps } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 import React from 'react';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Text,
-  TouchableNativeFeedback,
-} from 'react-native';
-import { CompanyListGrey, MIGreen, White } from '../../assets/styles/index';
+  CompanyListGrey,
+  MIGreen,
+  White,
+} from '../../assets/styles/RegularTheme';
 
-export const TabNavigationBar = (props: {
-  navigation: NativeStackHeaderProps | BottomTabHeaderProps;
-  endPoints: { name: string; route: string }[];
-}) => {
-  const tabs = props.endPoints.map(endPoint => {
-    return (
-      <TouchableNativeFeedback
-        onPress={() => props.navigation.navigation.navigate(endPoint.route)}
-        key={endPoint.name}>
-        <View
-          style={
-            endPoint.route === props.navigation.route.name
-              ? [styles.tabContainer, styles.activeTab]
-              : styles.tabContainer
-          }>
-          <Text
-            style={
-              endPoint.route === props.navigation.route.name
-                ? [styles.tabText, styles.activeText]
-                : styles.tabText
-            }>
-            {endPoint.name}
-          </Text>
-        </View>
-      </TouchableNativeFeedback>
-    );
-  });
+export const TabNavigationBar = (
+  props: MaterialTopTabBarProps & { isOnCompanyDetails?: boolean },
+) => {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.tabsContainer}>{tabs}</View>
-    </SafeAreaView>
+    <View
+      style={
+        props.isOnCompanyDetails
+          ? [styles.container, styles.companyDetailsContainer]
+          : styles.container
+      }>
+      <View style={styles.tabsContainer}>
+        {props.state.routes.map((route, index) => {
+          const { options } = props.descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name;
+
+          const isFocused = props.state.index === index;
+
+          const onPress = () => {
+            const event = props.navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+              // The `merge: true` option makes sure that the params inside the tab screen are preserved
+              props.navigation.navigate(route.name);
+            }
+          };
+
+          const onLongPress = () => {
+            props.navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          };
+
+          return (
+            <TouchableOpacity
+              key={index}
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              testID={options.tabBarTestID}
+              onPress={onPress}
+              onLongPress={onLongPress}
+              style={
+                isFocused
+                  ? [styles.tabContainer, styles.activeTab]
+                  : [styles.tabContainer]
+              }>
+              <Text
+                style={
+                  isFocused
+                    ? [styles.tabText, styles.activeText]
+                    : [styles.tabText]
+                }>
+                {label.toString()}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -50,6 +86,12 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
+  },
+  companyDetailsContainer: {
+    top: 70,
   },
   tabsContainer: {
     display: 'flex',

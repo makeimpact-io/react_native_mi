@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-function SignOutIcon(props) {
+function SignOutIcon(props: any) {
   return (
     <Svg
       transform="rotate(90)"

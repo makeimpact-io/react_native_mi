@@ -1,8 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { White } from '../../assets/styles';
-import { Black } from '../../assets/styles/RegularTheme';
+import { Black, White } from '../../assets/styles/RegularTheme';
 import { Company, Sector } from '../../types';
 
 export const ImpactChampion = (props: {

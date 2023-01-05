@@ -5,27 +5,32 @@ import {
   ScrollView,
   View,
   Pressable,
+  Text,
 } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
+import {
+  AppBackgroundColors,
+  MainTextWhite,
+} from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
 import { connect } from 'react-redux';
 import { AppState } from '../../state/store';
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
-import { AcademyHeadline, CompanyListItem } from '../../components';
-import { Company, Sector } from '../../types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack/lib/typescript/src/types';
+import {
+  AcademyHeadline,
+  CompanyListItem,
+  DescriptionModal,
+} from '../../components';
+import { Company } from '../../types';
 import { useEffect, useState } from 'react';
 import PinkWaveHeader from '../../assets/icons/PinkWaves/PinkWaveHeader';
 import QuestionMark from '../../assets/icons/Utils/QuestionMark';
-import { DescriptionModal } from '../../components/Modals/DescriptionModal';
+import { RootStackNavigationParamList } from '../../navigation/App/AppContent';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  typeof mapDispatchToProps & {
-    route: any;
-    navigation: NativeStackNavigationHelpers;
-  };
+  NativeStackScreenProps<RootStackNavigationParamList, 'SectorCompanies'>;
 
 const SectorCompaniesScreen = (props: Props) => {
-  const sector = props.route.params.sector as Sector;
+  const sector = props.route.params.sector;
   const [sectorCompanies, setSectorCompanies] = useState<Company[]>([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -34,7 +39,6 @@ const SectorCompaniesScreen = (props: Props) => {
       props.companies.filter(company => company.sectorId === sector.id),
     );
   }, [props.companies, sector.id]);
-
   const companiesToRender = sectorCompanies.map(company => {
     return (
       <View style={styles.companyContainer} key={company.id}>
@@ -71,7 +75,13 @@ const SectorCompaniesScreen = (props: Props) => {
               showModal={showModal}
             />
           </View>
-          <View style={styles.companiesContainer}>{companiesToRender}</View>
+          {sectorCompanies.length !== 0 ? (
+            <View style={styles.companiesContainer}>{companiesToRender}</View>
+          ) : (
+            <Text style={styles.noCompaniesText}>
+              There are currently no companies belonging to this sector.
+            </Text>
+          )}
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -95,7 +105,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    paddingTop: 30,
   },
   pinkWave: {
     position: 'absolute',
@@ -139,6 +148,13 @@ const styles = StyleSheet.create({
   },
   questionMarkContainer: {
     marginRight: 20,
+  },
+  noCompaniesText: {
+    fontSize: 15,
+    marginTop: 10,
+    marginHorizontal: 15,
+    textAlign: 'center',
+    color: MainTextWhite,
   },
 });
 

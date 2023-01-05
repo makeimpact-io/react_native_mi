@@ -7,7 +7,7 @@ import {
   MIPink,
   OnboardingBackgroundColors,
   TertiaryText,
-} from '../../assets/styles';
+} from '../../assets/styles/RegularTheme';
 
 export const OnboardingNavigationBar = (props: {
   navigation: NativeStackHeaderProps;

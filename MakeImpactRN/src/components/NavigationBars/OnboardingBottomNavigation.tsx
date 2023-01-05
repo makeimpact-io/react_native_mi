@@ -1,31 +1,30 @@
-import { NativeStackNavigationHelpers } from '@react-navigation/native-stack/lib/typescript/src/types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { MainTextWhite } from '../../assets/styles';
-import { Black, MIPink } from '../../assets/styles/RegularTheme';
-import { ActionButton } from '../Button/ActionButton/ActionButton';
+import { Black, MIPink, MainTextWhite } from '../../assets/styles/RegularTheme';
+import { DefaultButton } from '../';
 
 export const OnboardingBottomNavigation = (props: {
-  navigation: NativeStackNavigationHelpers;
-  nextPage: string;
+  goNextPage?: () => void;
+  goBack?: () => void;
   onClick?: () => void;
   disabled?: boolean;
-  goBack?: boolean;
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
-        {props.goBack ? (
-          <ActionButton
+        {props.goBack !== undefined && (
+          <DefaultButton
             content={'Back'}
             backgroundColor={Black}
             textColor={MainTextWhite}
-            action={() => props.navigation.goBack()}
+            action={() =>
+              props.goBack ? props.goBack() : () => console.log('Error')
+            }
           />
-        ) : null}
+        )}
       </View>
       <View style={styles.buttonContainer}>
-        <ActionButton
+        <DefaultButton
           content={'Continue'}
           backgroundColor={MIPink}
           textColor={Black}
@@ -33,9 +32,8 @@ export const OnboardingBottomNavigation = (props: {
             if (props.onClick) {
               await props.onClick();
             }
-            if (props.nextPage) {
-              props.navigation.navigate(props.nextPage);
-            } else {
+            if (props.goNextPage) {
+              props.goNextPage();
             }
           }}
           disabled={props.disabled}

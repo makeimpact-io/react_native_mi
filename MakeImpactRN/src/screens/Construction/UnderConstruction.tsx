@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { StyleSheet, SafeAreaView, Text } from 'react-native';
-import { AppBackgroundColors } from '../../assets/styles';
+import { AppBackgroundColors, MIPink } from '../../assets/styles/RegularTheme';
 import LinearGradient from 'react-native-linear-gradient';
+import Construction from '../../assets/icons/Utils/Construction';
 
 export const UnderConstruction = () => {
   return (
     <LinearGradient colors={AppBackgroundColors} style={styles.background}>
       <SafeAreaView style={styles.container}>
-        <Text>Under Construction</Text>
+        <Construction />
+        <Text style={styles.text}>Under Construction</Text>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -23,7 +25,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '70%',
     display: 'flex',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
+  },
+  text: {
+    color: MIPink,
+    fontSize: 28,
+    fontWeight: 'bold',
+    fontFamily: 'Barlow',
   },
 });

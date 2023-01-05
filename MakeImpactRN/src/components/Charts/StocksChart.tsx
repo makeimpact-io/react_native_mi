@@ -7,7 +7,12 @@ import {
   View,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { MIGreen, MIPink, PrimaryGrey, White } from '../../assets/styles';
+import {
+  MIGreen,
+  MIPink,
+  PrimaryGrey,
+  White,
+} from '../../assets/styles/RegularTheme';
 
 const screenWidth = Dimensions.get('window').width;
 const chartConfig = {
@@ -22,6 +27,21 @@ const chartConfig = {
   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
 };
 
+const monthNames = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 export const StocksChart = (props: { stockData: Map<string, string> }) => {
   const [loading, setLoading] = useState(true);
   const [duration, setDuration] = useState(12);
@@ -32,40 +52,44 @@ export const StocksChart = (props: { stockData: Map<string, string> }) => {
   useEffect(() => {
     setLoading(true);
     const now = new Date();
-    let begginingDate = new Date();
-    begginingDate.setMonth(begginingDate.getMonth() - duration);
+    let beginningDate = new Date();
+    beginningDate.setMonth(beginningDate.getMonth() - duration);
 
-    let firstLabelDate = new Date(begginingDate);
+    let firstLabelDate = new Date(beginningDate);
     let newLabels: string[] = [];
 
     switch (duration) {
       case 3:
-        firstLabelDate = new Date(begginingDate);
+        firstLabelDate = new Date(beginningDate);
         newLabels = [];
         for (let i = 0; i < 7; i++) {
           const date = firstLabelDate.getDate();
           const month = firstLabelDate.getMonth() + 1;
-          newLabels.push(date + ' of ' + month);
+          newLabels.push(date + ' of ' + monthNames[month]);
           firstLabelDate.setDate(firstLabelDate.getDate() + 15);
         }
         setLabels(newLabels);
         break;
       case 6:
-        firstLabelDate = new Date(begginingDate);
+        firstLabelDate = new Date(beginningDate);
         newLabels = [];
         for (let i = 0; i < 6; i++) {
           const month = firstLabelDate.getMonth() + 1;
-          newLabels.push((month + 1).toString());
+          if (month === 12) {
+            newLabels.push(monthNames[0]);
+          } else {
+            newLabels.push(monthNames[month]);
+          }
           firstLabelDate.setMonth(firstLabelDate.getMonth() + 1);
         }
         setLabels(newLabels);
         break;
       case 12:
-        firstLabelDate = new Date(begginingDate);
+        firstLabelDate = new Date(beginningDate);
         newLabels = [];
         for (let i = 0; i < 7; i++) {
-          const month = firstLabelDate.getMonth() + 1;
-          newLabels.push(month.toString());
+          const month = firstLabelDate.getMonth();
+          newLabels.push(monthNames[month]);
           firstLabelDate.setMonth(firstLabelDate.getMonth() + 2);
         }
         setLabels(newLabels);
@@ -78,7 +102,7 @@ export const StocksChart = (props: { stockData: Map<string, string> }) => {
       const date = new Date(
         key.slice(0, 4) + '-' + key.slice(4, 6) + '-' + key.slice(6, 8),
       );
-      if (date > begginingDate && date < now) {
+      if (date > beginningDate && date < now) {
         data.push(parseFloat(value));
       }
     }

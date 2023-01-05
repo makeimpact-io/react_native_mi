@@ -5,28 +5,31 @@ import {
   Text,
   TouchableWithoutFeedback,
   Linking,
+  SafeAreaView,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { useEffect, useState } from 'react';
 import {
   Black,
   MainTextWhite,
   MIPink,
   OnboardingBackgroundColors,
-} from '../../assets/styles';
+} from '../../assets/styles/RegularTheme';
 
-import LinearGradient from 'react-native-linear-gradient';
-import { Header } from '../../components/Text/Header';
-import { SecondaryText } from '../../components/Text/SecondaryText';
-import { useContext, useEffect, useState } from 'react';
-import { InputField } from '../../components/InputField/InputField';
+import {
+  Header,
+  SecondaryText,
+  InputField,
+  DefaultButton,
+  ErrorModal,
+} from '../../components/';
 import {
   validateEmail,
   validatePassword,
 } from '../../utils/validation/InputValidator';
-import { CheckBox } from 'react-native-elements';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { AuthContext } from '../../navigation/AuthProvider';
-import { ActionButton } from '../../components';
-import { ErrorModal } from '../../components/Modals/ErrorModal';
+import TickedCircle from '../../assets/icons/Utils/TickedCircle';
+import Circle from '../../assets/icons/Utils/Circle';
+import { register } from '../../api/firebase/auth';
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
@@ -37,12 +40,12 @@ const RegisterScreen = () => {
   const [error, setError] = useState(false);
   const [formIsValid, setFormIsValid] = useState(false);
 
-  const authContext = useContext(AuthContext);
-
   useEffect(() => {
     if (
-      (validateEmail(email) || email !== '') &&
-      (validatePassword(password) || password !== '') &&
+      validateEmail(email) &&
+      email !== '' &&
+      validatePassword(password) &&
+      password !== '' &&
       validatePassword(repeatPassword) &&
       repeatPassword !== '' &&
       password === repeatPassword &&
@@ -54,9 +57,8 @@ const RegisterScreen = () => {
     }
   }, [agreement, email, password, repeatPassword]);
 
-  const register = async function () {
-    console.log('opa');
-    const result = await authContext?.register(email, repeatPassword);
+  const singUp = async function () {
+    const result = await register(email, repeatPassword);
     if (result) {
       setError(true);
     }
@@ -83,7 +85,7 @@ const RegisterScreen = () => {
             value={email}
             onChangeText={(text: string) => setEmail(text)}
             error={!(validateEmail(email) || email === '')}
-            errorText={'Invalid email'}
+            errorText={'Invalid email!'}
           />
           <InputField
             placeholder={'Password'}
@@ -91,32 +93,29 @@ const RegisterScreen = () => {
             onChangeText={(text: string) => setPassword(text)}
             error={!(validatePassword(password) || password === '')}
             isPassword={true}
-            errorText={'Invalid password'}
+            errorText={'Invalid password!'}
           />
           <InputField
             placeholder={'Confirm Password'}
             value={repeatPassword}
             onChangeText={(text: string) => setRepeatPassword(text)}
             error={
-              !(
-                validatePassword(repeatPassword) ||
-                (repeatPassword === '' && password === repeatPassword)
-              )
+              !validatePassword(repeatPassword) ||
+              repeatPassword === '' ||
+              password !== repeatPassword
             }
             isPassword={true}
-            errorText={'Invalid password'}
+            errorText={'Password is not the same!'}
           />
         </View>
         <View style={styles.agreementContainer}>
-          <CheckBox
-            checked={agreement}
-            iconType="font-awesome"
-            checkedIcon="check-square-o"
-            uncheckedIcon="square-o"
-            checkedColor={MIPink}
-            uncheckedColor={MIPink}
-            onPress={() => setAgreement(!agreement)}
-          />
+          <TouchableWithoutFeedback onPress={() => setAgreement(!agreement)}>
+            {agreement ? (
+              <TickedCircle height={25} width={25} />
+            ) : (
+              <Circle height={25} width={25} />
+            )}
+          </TouchableWithoutFeedback>
           <View style={styles.agreementTextContainer}>
             <Text style={styles.agreementText}>
               By ticking this box you agree to the MakeImpact
@@ -137,11 +136,11 @@ const RegisterScreen = () => {
           </View>
         </View>
         <View style={styles.registerButtonContainer}>
-          <ActionButton
+          <DefaultButton
             content={'Register'}
             backgroundColor={MIPink}
             textColor={Black}
-            action={register}
+            action={singUp}
             disabled={!formIsValid}
           />
         </View>
@@ -176,7 +175,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    width: '80%',
+    width: '90%',
     paddingBottom: 50,
     paddingTop: 30,
   },
@@ -184,6 +183,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    marginLeft: 10,
     width: '90%',
   },
   agreementText: {
