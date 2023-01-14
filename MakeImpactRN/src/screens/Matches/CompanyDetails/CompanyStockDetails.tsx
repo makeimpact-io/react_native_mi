@@ -123,7 +123,14 @@ const CompanyStockDetails = (props: Props) => {
               <CompanyDataTable
                 data={
                   new Map([
-                    ['Country', { text: company.countryId }],
+                    [
+                      'Country',
+                      {
+                        text: props.countries.find(
+                          c => c.id === company.countryId,
+                        )?.name,
+                      },
+                    ],
                     ['Sector', { text: sector.name }],
                     ['Employees', { text: company.employees.toLocaleString() }],
                     [
@@ -162,6 +169,7 @@ const CompanyStockDetails = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
   companies: state.dataReducer.companies,
   sectors: state.dataReducer.sectors,
+  countries: state.dataReducer.countries,
 });
 
 const mapDispatchToProps = {};

@@ -54,7 +54,7 @@ const MatchesSearchScreen = (props: Props) => {
       c.name.toLowerCase().includes(searchInput.toLowerCase()),
     );
     setCompaniesResult(new Set(searchResult));
-  }, [filteredCompanies, filters, props.companies, searchInput]);
+  }, [filteredCompanies, searchInput]);
 
   useEffect(() => {
     if (filters.length !== 0) {
@@ -70,13 +70,7 @@ const MatchesSearchScreen = (props: Props) => {
                       props.goals.find(g => g.id === filter.filter)?.title
                     }
                     onClose={() =>
-                      setFilters(
-                        filters.filter(
-                          f =>
-                            f.category !== filter.category &&
-                            f.filter !== filter.filter,
-                        ),
-                      )
+                      setFilters(filters.filter(f => f !== filter))
                     }
                   />
                 </View>
@@ -90,13 +84,7 @@ const MatchesSearchScreen = (props: Props) => {
                       props.sectors.find(s => s.id === filter.filter)?.name
                     }
                     onClose={() =>
-                      setFilters(
-                        filters.filter(
-                          f =>
-                            f.category !== filter.category &&
-                            f.filter !== filter.filter,
-                        ),
-                      )
+                      setFilters(filters.filter(f => f !== filter))
                     }
                   />
                 </View>
@@ -110,13 +98,7 @@ const MatchesSearchScreen = (props: Props) => {
                       props.commitments.find(c => c.id === filter.filter)?.title
                     }
                     onClose={() =>
-                      setFilters(
-                        filters.filter(
-                          f =>
-                            f.category !== filter.category &&
-                            f.filter !== filter.filter,
-                        ),
-                      )
+                      setFilters(filters.filter(f => f !== filter))
                     }
                   />
                 </View>
@@ -124,6 +106,8 @@ const MatchesSearchScreen = (props: Props) => {
           }
         }),
       );
+    } else {
+      setRenderedFilters(undefined);
     }
   }, [filters, props.commitments, props.goals, props.sectors]);
 

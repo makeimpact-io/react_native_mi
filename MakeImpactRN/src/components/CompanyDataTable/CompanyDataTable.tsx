@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { Black, MainTextWhite } from '../../assets/styles/RegularTheme';
 
 export const CompanyDataTable = (props: {
-  data: Map<string, { text: string; onClick?: () => void }>;
+  data: Map<string, { text: string | undefined; onClick?: () => void }>;
 }) => {
   const data = props.data;
   let itemsToRender: any[] = [];
@@ -20,7 +20,7 @@ export const CompanyDataTable = (props: {
                 ? [styles.valueText, styles.underlined]
                 : styles.valueText
             }>
-            {value.text}
+            {value.text ? value.text : 'Unknown'}
           </Text>
         </TouchableWithoutFeedback>
       </View>,

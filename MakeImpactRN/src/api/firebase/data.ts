@@ -13,6 +13,7 @@ import {
   receiveAcademyCategories,
   receiveAcademyArticles,
   receiveTexts,
+  receiveCountries,
 } from '../../state/data/dataSlice';
 import store from '../../state/store';
 import {
@@ -20,6 +21,7 @@ import {
   AcademyCategory,
   Commitment,
   Company,
+  Country,
   SASB,
   SDG,
   Sector,
@@ -85,6 +87,7 @@ export const initiateRealtimeData = async () => {
   firestore()
     .collection('tradingData')
     .onSnapshot(onTradingDataResult, onError);
+  firestore().collection('countries').onSnapshot(onCountryResult, onError);
 };
 
 function onResult<T>(
@@ -97,6 +100,18 @@ function onResult<T>(
     data.push(singleData as T);
   }
   store.dispatch(action(data));
+}
+
+function onCountryResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {
+  let data = [] as Country[];
+  for (let i = 0; i < QuerySnapshot.docs.length; i++) {
+    const singleData = QuerySnapshot.docs[i].data();
+    data.push({
+      id: singleData.id.toString(),
+      name: singleData['Country name'],
+    });
+  }
+  store.dispatch(receiveCountries(data));
 }
 
 function onCompanyResult(QuerySnapshot: FirebaseFirestoreTypes.QuerySnapshot) {

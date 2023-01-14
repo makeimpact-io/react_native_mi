@@ -4,6 +4,7 @@ import {
   AcademyCategory,
   Commitment,
   Company,
+  Country,
   SASB,
   SDG,
   Sector,
@@ -17,6 +18,7 @@ interface AppData {
   sdgs: SDG[];
   companies: Company[];
   commitments: Commitment[];
+  countries: Country[];
   sasbs: SASB[];
   sectors: Sector[];
   academyCategories: AcademyCategory[];
@@ -29,6 +31,7 @@ const initialState = {
   sdgs: [],
   companies: [],
   commitments: [],
+  countries: [],
   sasbs: [],
   sectors: [],
   academyCategories: [],
@@ -50,6 +53,9 @@ const tempUserSlice = createSlice({
     },
     receiveCommitments(state, action: PayloadAction<Commitment[]>) {
       state.commitments = action.payload;
+    },
+    receiveCountries(state, action: PayloadAction<Country[]>) {
+      state.countries = action.payload;
     },
     receiveSASBs(state, action: PayloadAction<SASB[]>) {
       state.sasbs = action.payload;
@@ -105,6 +111,7 @@ export const {
   receiveAcademyCategories,
   receiveAcademyArticles,
   receiveTexts,
+  receiveCountries,
 } = tempUserSlice.actions;
 
 export default tempUserSlice.reducer;

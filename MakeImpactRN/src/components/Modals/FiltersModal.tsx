@@ -64,6 +64,10 @@ export const FiltersModal = (props: {
   };
 
   useEffect(() => {
+    setFilters(props.filters);
+  }, [props.filters]);
+
+  useEffect(() => {
     setCommitmentsOptionsRendered(
       props.commitments.map(commitment => {
         return (
